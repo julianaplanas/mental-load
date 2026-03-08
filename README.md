@@ -59,6 +59,8 @@
 - ✅ Upcoming — next 7 days list, tappable to open card detail
 - ✅ Activity trend — vertical bar chart, past 4 weeks (done vs pending stacked)
 - ✅ Recently completed — last 5 done tasks with who completed them and when
+- ✅ Subtasks (steps) — each task can have sub-steps, each with its own assignee and status (on it / done)
+- ✅ Subtask progress shown on feed cards (e.g. "2/5 ✓")
 - ✅ Offline support — failed mutations queued in AsyncStorage, auto-synced on reconnect
 - ✅ Offline banner — shown when socket connection is lost
 - ✅ Timezone-safe date display — custom dates parsed as local time (no UTC-offset artefacts)
@@ -190,10 +192,11 @@ Scan the QR code with Expo Go on each phone.
 | `TIMEZONE` | Your IANA timezone, e.g. `America/Argentina/Buenos_Aires` |
 
 6. Go to the service → **Settings** → **Networking** → **Generate Domain** to get your public URL (e.g. `https://noi-backend.railway.app`)
-7. **Run the migration** — from your local machine with the Railway `DATABASE_URL` in your `.env`:
+7. **Run migrations** — from your local machine with the Railway `DATABASE_URL` in your `.env`:
    ```bash
    cd backend && npm run migrate
    ```
+   This runs all SQL files in `src/migrations/` in order (`001_init.sql`, `002_subtasks.sql`, …). Safe to run multiple times — tables use `IF NOT EXISTS`.
 
 ### Frontend — Expo builds
 

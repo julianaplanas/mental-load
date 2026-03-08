@@ -1,0 +1,26 @@
+{
+  "name": "noi-backend",
+  "version": "1.0.0",
+  "description": "Noi — shared mental load app backend",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "migrate": "node src/migrate.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "expo-server-sdk": "^3.7.0",
+    "express": "^4.19.2",
+    "node-cron": "^3.0.3",
+    "pg": "^8.11.5",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
