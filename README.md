@@ -1,69 +1,31 @@
 # Noi — Shared Mental Load App
 
-**Noi** (short for *nosotros*) is a shared task and mental load management app for two people — Juli and Gino. It helps them stay on top of shared responsibilities in a warm, calm, and non-stressful way.
+**Noi** (short for *nosotros*) is a shared task and mental load management app for two people — Juli and Gino. It runs as a **Progressive Web App (PWA)** — install it directly from Safari or Chrome to your home screen, no App Store required.
 
 ---
 
-## Current Status
+## Features
 
-| Phase | Status |
-|-------|--------|
-| Phase 1 — Project Setup & Auth | ✅ Complete |
-| Phase 2 — Core Card System | ✅ Complete |
-| Phase 3 — Card Interactions | ✅ Complete |
-| Phase 4 — Grocery List | ✅ Complete |
-| Phase 5 — Notifications | ✅ Complete |
-| Phase 6 — Dashboard | ✅ Complete |
-| Phase 7 — Polish & Deployment | ✅ Complete |
-
----
-
-## Features Implemented
-
-- ✅ Backend: Express + Socket.io server (Railway-ready)
-- ✅ Database: PostgreSQL schema with all tables (cards, comments, reactions, grocery items, push tokens)
-- ✅ Name-based auth: Juli / Gino selector on first launch
-- ✅ User stored in AsyncStorage (no re-selection on subsequent opens)
-- ✅ Push notification token registration (Expo Push Notifications)
-- ✅ Socket.io real-time sync between both devices
-- ✅ Tab navigation: Tasks / Groceries / Stats
-- ✅ Card feed with urgency sorting (overdue → today → this week → this month)
-- ✅ Add card form with all fields (title, timeline, assigned, tag, priority, recurring, notes)
-- ✅ Custom tag creation (type your own category beyond the 6 presets)
-- ✅ Card detail view with all fields displayed
-- ✅ Status actions: "I'm on it" / unclaim, "Mark as Done", "Waiting on...", "Snooze"
-- ✅ Push notifications on assignment and "I'm on it" claim
-- ✅ Delete card with confirmation
-- ✅ Real-time feed updates via Socket.io
-- ✅ Edit card — pre-filled form for all fields, supports custom tags
-- ✅ Snooze — pushes due date +7 days, tracks snooze count, warns after 3 snoozes
-- ✅ Comments — per-card thread with author name + timestamp, real-time sync
-- ✅ Emoji reactions — 6 options (❤️ 😂 👍 👀 ✅ 🙏), one per user per card, real-time sync
-- ✅ Recurring tasks — on completion, next instance auto-created at correct frequency
-- ✅ Grocery list — real-time shared checklist, grouped by category
-- ✅ Grocery quick-add (name only) and expanded-add (+ quantity + category)
-- ✅ Check off items — strikethrough, moved to "In the basket" section
-- ✅ Delete with 3-second undo toast
-- ✅ "Clear checked" with confirmation
-- ✅ Push notification when 3+ items added at once
-- ✅ "Add to grocery list" shortcut on Groceries-tagged task cards
-- ✅ Scheduled notifications via node-cron (timezone-aware)
-- ✅ 9 AM daily: "due today" reminder + overdue escalation
-- ✅ Sunday 10 AM: weekly digest (completed by whom, pending count, coming up)
-- ✅ Do Not Disturb: all pushes suppressed between 10 PM – 8 AM
-- ✅ Overdue escalation rules: daily (Today/Custom), every 2 days (This week), Mondays only (This month)
-- ✅ Snoozed cards excluded from overdue reminders until snooze expires
-- ✅ Dashboard with "This Month" / "All Time" toggle
-- ✅ Tasks by category — horizontal bar chart (done teal / pending orange), no external lib
-- ✅ Fairness overview — side-by-side panels + proportional balance bar (non-gamified)
-- ✅ Upcoming — next 7 days list, tappable to open card detail
-- ✅ Activity trend — vertical bar chart, past 4 weeks (done vs pending stacked)
-- ✅ Recently completed — last 5 done tasks with who completed them and when
-- ✅ Subtasks (steps) — each task can have sub-steps, each with its own assignee and status (on it / done)
-- ✅ Subtask progress shown on feed cards (e.g. "2/5 ✓")
-- ✅ Offline support — failed mutations queued in AsyncStorage, auto-synced on reconnect
-- ✅ Offline banner — shown when socket connection is lost
-- ✅ Timezone-safe date display — custom dates parsed as local time (no UTC-offset artefacts)
+- ✅ Name-based auth (Juli / Gino) — choice saved on device, never asked again
+- ✅ Task feed with urgency sorting (overdue → today → this week → this month)
+- ✅ Timeline badges: Overdue / Today / This week / This month / Custom date
+- ✅ Add & edit tasks: title, timeline, assignee, category tag, priority, recurring, notes
+- ✅ Custom tag creation (beyond the 6 presets)
+- ✅ Status actions: "I'm on it" / unclaim, "Mark as Done", "Waiting on…", "Snooze"
+- ✅ Subtasks (Steps) — per-task sub-steps, each with assignee and status; progress shown on feed cards
+- ✅ Recurring tasks — on completion, next instance created automatically
+- ✅ Snooze — pushes due date +7 days, warns after 3 snoozes
+- ✅ Emoji reactions (❤️ 😂 👍 👀 ✅ 🙏) — one per user per card
+- ✅ Comments — per-card thread with timestamps, real-time sync
+- ✅ Grocery list — real-time shared checklist grouped by category, delete with undo toast
+- ✅ "Add to grocery list" shortcut on Groceries-tagged cards
+- ✅ Dashboard — tasks by category, fairness overview, upcoming 7 days, weekly trend, recently completed
+- ✅ Push notifications via Web Push (VAPID) — no Expo, no App Store
+- ✅ Scheduled notifications: 9 AM daily reminders, overdue escalation, Sunday digest
+- ✅ Do Not Disturb: all pushes suppressed 10 PM – 8 AM
+- ✅ Real-time sync via Socket.io
+- ✅ Offline support — failed mutations queued in localStorage, auto-synced on reconnect
+- ✅ Offline banner when connection is lost
 
 ---
 
@@ -75,47 +37,40 @@ mental-load/
 │   ├── src/
 │   │   ├── index.js       # Server entry point
 │   │   ├── db.js          # PostgreSQL connection pool
-│   │   ├── migrate.js     # Run DB migrations
-│   │   ├── notifications.js
+│   │   ├── migrate.js     # Runs all SQL migrations in order
+│   │   ├── notifications.js  # Web Push (VAPID)
 │   │   ├── scheduler.js   # node-cron scheduled jobs
 │   │   ├── migrations/
-│   │   │   └── 001_init.sql
+│   │   │   ├── 001_init.sql
+│   │   │   └── 002_subtasks.sql
 │   │   └── routes/
-│   │       ├── users.js
-│   │       ├── cards.js
+│   │       ├── users.js   # Auth + VAPID key + push subscription
+│   │       ├── cards.js   # Cards + subtasks + comments + reactions
 │   │       ├── grocery.js
 │   │       └── stats.js
 │   ├── package.json
 │   ├── .env.example
 │   └── railway.toml
-├── frontend/              # Expo (React Native)
-│   ├── app/
-│   │   ├── _layout.tsx    # Root layout + auth guard + offline banner
-│   │   ├── index.tsx      # Auth screen (name selector)
-│   │   └── (tabs)/
-│   │       ├── _layout.tsx
-│   │       ├── index.tsx      # Tasks feed
-│   │       ├── grocery.tsx    # Grocery list
-│   │       └── dashboard.tsx  # Stats
-│   ├── components/
-│   │   ├── CardItem.tsx
-│   │   ├── TimelineBadge.tsx
-│   │   ├── CommentsSection.tsx
-│   │   └── ReactionsSection.tsx
-│   ├── hooks/
-│   │   ├── useAuth.ts
-│   │   └── useCards.ts
-│   ├── lib/
-│   │   ├── api.ts
-│   │   ├── socket.ts
-│   │   ├── storage.ts
-│   │   ├── notifications.ts
-│   │   └── offlineQueue.ts
-│   ├── types/
-│   │   └── index.ts
+├── frontend/              # Vite + React PWA
+│   ├── public/
+│   │   ├── manifest.json  # PWA manifest
+│   │   ├── sw.js          # Service worker (cache + push)
+│   │   └── icons/         # icon-192.png, icon-512.png (add manually)
+│   ├── src/
+│   │   ├── main.tsx       # React entry + SW registration
+│   │   ├── App.tsx        # Router + auth guard + offline banner
+│   │   ├── index.css      # Global styles + CSS variables
+│   │   ├── types/
+│   │   ├── lib/           # api.ts, socket.ts, notifications.ts, offlineQueue.ts, storage.ts
+│   │   ├── hooks/         # useAuth.ts, useCards.ts
+│   │   ├── components/    # CardItem, TabBar, TimelineBadge, CommentsSection, ReactionsSection, SubtasksSection
+│   │   └── pages/         # AuthPage, FeedPage, GroceryPage, DashboardPage, CardDetailPage, CardFormPage
+│   ├── index.html
+│   ├── vite.config.ts
+│   ├── tsconfig.json
 │   ├── package.json
-│   ├── app.json
-│   └── .env.example
+│   ├── .env.example
+│   └── railway.toml
 └── README.md
 ```
 
@@ -126,109 +81,160 @@ mental-load/
 ### Prerequisites
 
 - Node.js 18+
-- Expo Go app on your phone (iOS or Android)
-- A Railway account with a PostgreSQL database
+- A Railway project with a PostgreSQL service
 
-### 1. Database — Railway PostgreSQL
+### 1. Database setup
 
-1. Create a new project on [Railway](https://railway.app)
-2. Add a **PostgreSQL** service to your project
-3. Go to the PostgreSQL service → **Variables** tab → copy `DATABASE_URL`
+1. Create a project on [Railway](https://railway.app)
+2. Add a **PostgreSQL** service to it
+3. Go to the PostgreSQL service → **Connect** tab → enable **Public Network**
+4. Copy the **external** connection URL (looks like `postgresql://user:pass@roundhouse.proxy.rlwy.net:XXXXX/railway`)
 
-Then run the migration locally:
-
-```bash
-cd backend
-cp .env.example .env
-# Paste your DATABASE_URL into .env
-npm install
-npm run migrate
-```
+> **Why external URL?** The default `DATABASE_URL` shown in Railway Variables is an *internal* URL — it only works within Railway's private network. You need the external URL to connect from your Mac.
 
 ### 2. Backend — local server
 
 ```bash
 cd backend
-npm run dev
+cp .env.example .env
+# Paste the external DATABASE_URL from step above
+# Fill in other vars (see Environment Variables below)
+npm install
+npm run migrate      # creates all tables — safe to run multiple times
+npm run dev          # starts on http://localhost:3000
 ```
 
-Server starts on `http://localhost:3000`.
-
-### 3. Frontend — Expo Go
+### 3. Frontend — Vite dev server
 
 ```bash
 cd frontend
 cp .env.example .env
-# Set EXPO_PUBLIC_API_URL to your local IP (see below)
+# Set VITE_API_URL=http://localhost:3000
+# Set VITE_VAPID_PUBLIC_KEY (generate VAPID keys first — see below)
 npm install
-npx expo start
+npm run dev          # starts on http://localhost:5173
 ```
 
-**Finding your local IP:** run `ipconfig getifaddr en0` (macOS) or `hostname -I` (Linux). Use this IP in your `.env`:
-
-```
-EXPO_PUBLIC_API_URL=http://192.168.1.42:3000
-```
-
-Scan the QR code with Expo Go on each phone.
+Open `http://localhost:5173` in your browser.
 
 ---
 
-## Deployment to Railway
+## Deploying to Railway
 
-### Backend
+You need **two Railway services**: one for the backend, one for the frontend.
 
-1. Push your repo to GitHub
-2. In your Railway project, add a **new service** → **Deploy from GitHub repo** → select this repo
-3. Set the **Root directory** to `backend`
-4. Railway will auto-detect `railway.toml` and use `npm start`
-5. Go to the service → **Variables** tab and add:
+### Before first deploy: generate VAPID keys
+
+Run this **once** on your Mac (requires the backend node_modules):
+
+```bash
+cd backend
+npx web-push generate-vapid-keys
+```
+
+Copy the output — you'll add these to both services' environment variables.
+
+### Service 1: Backend
+
+1. In your Railway project, add a service → **Deploy from GitHub repo** → select this repo
+2. Set **Root directory**: `backend`
+3. Railway uses `railway.toml` which runs `node src/migrate.js && node src/index.js` on start — **migrations run automatically on every deploy, no manual step needed**
+4. Connect the PostgreSQL service to this service (Railway auto-injects `DATABASE_URL`)
+5. Add these environment variables:
 
 | Variable | Value |
 |----------|-------|
-| `DATABASE_URL` | *(Railway auto-injects this if you connect the PostgreSQL service)* |
 | `NODE_ENV` | `production` |
-| `FRONTEND_URL` | `*` *(or your Expo build URL)* |
+| `FRONTEND_URL` | `https://your-noi-frontend.railway.app` *(your frontend URL — set after frontend deploy)* |
 | `TIMEZONE` | Your IANA timezone, e.g. `America/Argentina/Buenos_Aires` |
+| `VAPID_SUBJECT` | `mailto:your@email.com` |
+| `VAPID_PUBLIC_KEY` | *(from `npx web-push generate-vapid-keys`)* |
+| `VAPID_PRIVATE_KEY` | *(from `npx web-push generate-vapid-keys`)* |
 
-6. Go to the service → **Settings** → **Networking** → **Generate Domain** to get your public URL (e.g. `https://noi-backend.railway.app`)
-7. **Run migrations** — from your local machine with the Railway `DATABASE_URL` in your `.env`:
-   ```bash
-   cd backend && npm run migrate
-   ```
-   This runs all SQL files in `src/migrations/` in order (`001_init.sql`, `002_subtasks.sql`, …). Safe to run multiple times — tables use `IF NOT EXISTS`.
+6. Go to **Settings → Networking → Generate Domain** to get your public URL (e.g. `https://noi-backend.railway.app`)
 
-### Frontend — Expo builds
+### Service 2: Frontend
 
-For running on physical devices outside of Expo Go (recommended for push notifications):
+1. Add another service → **Deploy from GitHub repo** → same repo
+2. Set **Root directory**: `frontend`
+3. Railway uses `frontend/railway.toml` which runs `npm install && npm run build` then `npm start` (`npx serve -s dist`)
+4. Add these environment variables:
 
-1. Install EAS CLI:
-   ```bash
-   npm install -g eas-cli
-   eas login
-   ```
+| Variable | Value |
+|----------|-------|
+| `VITE_API_URL` | `https://noi-backend.railway.app` *(your backend URL from step above)* |
+| `VITE_VAPID_PUBLIC_KEY` | *(same public key from VAPID generation)* |
 
-2. In `frontend/`, initialise EAS:
-   ```bash
-   cd frontend
-   eas build:configure
-   ```
+5. Go to **Settings → Networking → Generate Domain** to get your frontend URL
+6. Go back to the **backend** service and update `FRONTEND_URL` to this frontend URL
 
-3. Set your production API URL in `frontend/.env`:
-   ```
-   EXPO_PUBLIC_API_URL=https://noi-backend.railway.app
-   ```
+### App icons (required for PWA install)
 
-4. Build for iOS (TestFlight) or Android (APK/AAB):
-   ```bash
-   eas build --platform ios --profile preview
-   # or
-   eas build --platform android --profile preview
-   ```
+Add two PNG image files to `frontend/public/icons/`:
+- `icon-192.png` — 192×192 px
+- `icon-512.png` — 512×512 px
 
-5. Install the resulting build on each phone.
+Any square image works. Without these, the PWA install prompt won't show an icon.
 
-> **Note:** Push notifications only work in EAS builds or standalone apps — not in Expo Go.
+---
+
+## Install the App (PWA)
+
+### iOS (iPhone/iPad)
+
+1. Open your frontend URL in **Safari** (must be Safari, not Chrome)
+2. Tap the **Share** button (square with arrow)
+3. Tap **Add to Home Screen**
+4. Tap **Add**
+
+The app now opens full-screen like a native app. Push notifications work on **iOS 16.4+**.
+
+### Android
+
+1. Open your frontend URL in **Chrome**
+2. Tap the three-dot menu → **Add to Home Screen** (or Chrome may show an install banner automatically)
+
+---
+
+## Push Notifications
+
+### How they work
+
+Notifications use the **Web Push API** (VAPID) — no Expo, no App Store required.
+
+- The frontend subscribes the device with the browser's push manager
+- The subscription is stored in the backend database
+- The backend sends pushes via `web-push` (VAPID)
+- The service worker (`public/sw.js`) shows the notification even when the app is closed
+
+### Requirements
+
+| Platform | Requirement |
+|----------|-------------|
+| iOS | Safari, iOS 16.4+, **must be installed to Home Screen** |
+| Android | Chrome, any modern version |
+| Desktop | Chrome or Edge |
+
+### Granting permission
+
+On first open after install, the Tasks screen shows a banner: **"Enable notifications to stay in sync"**. Tap **Enable** and allow the permission prompt.
+
+> On iOS, the permission prompt only appears after the PWA is added to the Home Screen. Opening in Safari without installing will not show the prompt.
+
+### Notification types
+
+| Type | When | Recipients |
+|------|------|-----------|
+| Due today | 9:00 AM, day of | Assigned person (or both) |
+| Overdue — was Today/Custom | 9:00 AM, daily | Assigned person (or both) |
+| Overdue — was This week | 9:00 AM, every 2 days | Assigned person (or both) |
+| Overdue — was This month | 9:00 AM, every Monday | Assigned person (or both) |
+| Task assigned | Immediately | Assignee only |
+| "I'm on it" claimed | Immediately | Other person |
+| Grocery list (3+ items) | Immediately | Other person |
+| Weekly digest | Sunday 10:00 AM | Both |
+
+All notifications respect **Do Not Disturb (10 PM – 8 AM)** in the configured `TIMEZONE`.
 
 ---
 
@@ -238,17 +244,34 @@ For running on physical devices outside of Expo Go (recommended for push notific
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | ✅ | PostgreSQL connection string (from Railway) |
-| `PORT` | — | Server port (Railway sets this automatically; default 3000 locally) |
+| `DATABASE_URL` | ✅ | PostgreSQL connection string (Railway auto-injects on deploy; use external URL for local dev) |
+| `PORT` | — | Server port (Railway sets automatically; defaults to 3000 locally) |
 | `NODE_ENV` | — | `production` on Railway, `development` locally |
-| `FRONTEND_URL` | — | Allowed CORS origin (can be `*` for open access) |
-| `TIMEZONE` | ✅ | IANA timezone name — controls scheduled jobs and DND window |
+| `FRONTEND_URL` | ✅ | Allowed CORS origin — your Railway frontend URL |
+| `TIMEZONE` | ✅ | IANA timezone, e.g. `America/Argentina/Buenos_Aires` |
+| `VAPID_SUBJECT` | ✅ | `mailto:you@example.com` |
+| `VAPID_PUBLIC_KEY` | ✅ | From `npx web-push generate-vapid-keys` |
+| `VAPID_PRIVATE_KEY` | ✅ | From `npx web-push generate-vapid-keys` |
 
 ### Frontend (`frontend/.env`)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `EXPO_PUBLIC_API_URL` | ✅ | Backend URL — Railway public URL in production, local IP in dev |
+| `VITE_API_URL` | ✅ | Backend URL — Railway URL in production, `http://localhost:3000` in dev |
+| `VITE_VAPID_PUBLIC_KEY` | ✅ | Same VAPID public key as backend |
+
+---
+
+## Database Migrations
+
+Migrations live in `backend/src/migrations/` as numbered SQL files (`001_init.sql`, `002_subtasks.sql`, …). All use `IF NOT EXISTS` so they're safe to run multiple times.
+
+**On Railway:** migrations run automatically when the backend starts (the start command is `node src/migrate.js && node src/index.js`). Nothing to do manually.
+
+**For local dev:** run once with the external DATABASE_URL in your `.env`:
+```bash
+cd backend && npm run migrate
+```
 
 ---
 
@@ -259,14 +282,13 @@ For running on physical devices outside of Expo Go (recommended for push notific
 | `id` | UUID | Auto-generated |
 | `title` | TEXT | Required |
 | `timeline` | ENUM | `today`, `this_week`, `this_month`, `custom` |
-| `custom_date` | DATE | Only when timeline = `custom` |
+| `custom_date` | DATE | Only when `timeline = 'custom'` |
 | `assigned_to` | ENUM | `either`, `juli`, `gino`, `together` |
 | `tag` | TEXT | Preset or custom category |
 | `priority` | ENUM | `urgent`, `normal`, `low` |
 | `status` | ENUM | `pending`, `on_it`, `waiting`, `done`, `snoozed` |
 | `status_user_id` | VARCHAR | Who claimed/completed |
-| `status_updated_at` | TIMESTAMPTZ | When status changed |
-| `status_note` | TEXT | Note for "Waiting on..." |
+| `status_note` | TEXT | Note for "Waiting on…" |
 | `is_recurring` | BOOLEAN | |
 | `recurring_frequency` | ENUM | `daily`, `weekly`, `biweekly`, `monthly` |
 | `notes` | TEXT | Free text |
@@ -275,7 +297,7 @@ For running on physical devices outside of Expo Go (recommended for push notific
 
 ## Recurring Task Behaviour
 
-When a recurring card is marked **Done**, the backend automatically creates the next instance with a `custom` timeline date set to:
+When a recurring card is marked **Done**, the backend creates the next instance:
 
 | Frequency | Next due |
 |-----------|----------|
@@ -284,71 +306,23 @@ When a recurring card is marked **Done**, the backend automatically creates the 
 | Every 2 weeks | +14 days |
 | Monthly | +1 calendar month |
 
-The new card inherits all fields (title, tag, priority, assigned_to, notes, frequency) from the completed one.
-
 ## Snooze Behaviour
 
-- Snooze pushes the card's due date forward by **7 days** (stored as a `custom` date)
-- Original timeline is preserved in `original_timeline` for display
-- `snooze_count` increments on every snooze
-- At 3+ snoozes, a gentle prompt appears: *"This has been snoozed a few times — want to tackle it together or reassign it?"*
+- Snooze pushes the due date forward **+7 days**
+- Original timeline preserved in `original_timeline`
+- At 3+ snoozes, a gentle prompt suggests reassigning
 
 ## Offline Behaviour
 
-- When the connection is lost, a soft banner appears at the top of the screen
-- Card creates and grocery adds that fail due to network errors are saved to the device's local queue (AsyncStorage)
-- When the connection restores, the queue is replayed automatically in the background
-- Status updates (on it, done, snooze) are not queued — these require a live connection
+- Offline banner shown when socket disconnects
+- Card creates and grocery adds that fail are saved to a local queue (localStorage)
+- Queue replays automatically when the connection restores
+- Status updates (on it, done, snooze) require a live connection
 
 ---
 
-## Notification Types
+## Known Limitations
 
-| Type | When | Recipients |
-|------|------|-----------|
-| Due today | 9:00 AM, day of | Assigned person (or both) |
-| Overdue — was Today/Custom | 9:00 AM, every day | Assigned person (or both) |
-| Overdue — was This week | 9:00 AM, every 2 days | Assigned person (or both) |
-| Overdue — was This month | 9:00 AM, every Monday | Assigned person (or both) |
-| Task assigned | Immediately | Assignee only |
-| "I'm on it" claimed | Immediately | Other person |
-| Grocery list (3+ items) | Immediately | Other person |
-| Weekly digest | Sunday 10:00 AM | Both |
-
-All real-time and scheduled notifications respect **Do Not Disturb (10 PM – 8 AM)** in the configured timezone.
-
-## Setting the Timezone
-
-Set `TIMEZONE` in `backend/.env` to your [IANA timezone name](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones):
-
-```
-TIMEZONE=America/Argentina/Buenos_Aires
-```
-
-This controls when scheduled jobs fire (9 AM, Sunday 10 AM) and the DND window.
-
-## Testing Notifications
-
-Notifications only work on **physical devices with an EAS build** (not Expo Go).
-
-To trigger a scheduled notification manually for testing, temporarily change the cron expression to fire in 1 minute:
-
-```javascript
-// In backend/src/scheduler.js
-cron.schedule('* * * * *', handler) // fires every minute
-```
-
-Or test the daily reminder endpoint directly:
-
-```bash
-node -e "require('./src/scheduler').initScheduler()"
-```
-
----
-
-## Known Issues / Limitations
-
-- Push notifications require a physical device with an EAS build (not Expo Go)
-- Offline queue covers card creates and grocery adds only — status updates require a live connection
+- Push notifications on iOS require iOS 16.4+ and the PWA installed to Home Screen
+- Offline queue covers card creates and grocery adds only — status updates need a live connection
 - No photo attachments on cards (future feature)
-- No Google Calendar integration (future feature)

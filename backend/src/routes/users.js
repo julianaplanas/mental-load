@@ -12,12 +12,12 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /users/:userId/push-token — register/update device push token
-router.post('/:userId/push-token', async (req, res) => {
+// POST /users/:userId/push-subscription — register/update web push subscription
+router.post('/:userId/push-subscription', async (req, res) => {
   const { userId } = req.params;
-  const { token } = req.body;
+  const { subscription } = req.body;
 
-  if (!token) return res.status(400).json({ error: 'token is required' });
+  if (!subscription) return res.status(400).json({ error: 'subscription is required' });
   if (!['juli', 'gino'].includes(userId)) {
     return res.status(404).json({ error: 'User not found' });
   }
@@ -27,12 +27,17 @@ router.post('/:userId/push-token', async (req, res) => {
       `INSERT INTO push_tokens (user_id, token, updated_at)
        VALUES ($1, $2, NOW())
        ON CONFLICT (user_id) DO UPDATE SET token = $2, updated_at = NOW()`,
-      [userId, token]
+      [userId, JSON.stringify(subscription)]
     );
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// GET /users/:userId/vapid-key — return public VAPID key for push subscription
+router.get('/vapid-key', (req, res) => {
+  res.json({ publicKey: process.env.VAPID_PUBLIC_KEY || '' });
 });
 
 module.exports = router;

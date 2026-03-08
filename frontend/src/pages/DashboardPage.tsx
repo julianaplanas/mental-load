@@ -1,0 +1,273 @@
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  getStatsByCategory, getStatsUpcoming, getStatsOverdueTrend,
+  getStatsFairness, getStatsRecentCompleted,
+} from '@/lib/api';
+import { PRESET_TAGS } from '@/types';
+
+interface CategoryStat { tag: string; pending: number; done: number; total: number; }
+interface UpcomingCard { id: string; title: string; timeline: string; custom_date?: string | null; assigned_to: string; priority: string; tag?: string | null; }
+interface WeekStat { weeks_ago: number; pending: number; done: number; total: number; }
+interface FairnessStat { user_id: string; name: string; completed: number; on_it: number; }
+interface RecentCard { id: string; title: string; tag?: string | null; status_user_id: string; status_updated_at: string; }
+
+type Period = 'month' | 'all';
+
+function tagEmoji(tag: string): string {
+  return PRESET_TAGS.find((t) => t.name === tag)?.emoji ?? '🏷️';
+}
+
+function timeAgo(ts: string): string {
+  const diff = Date.now() - new Date(ts).getTime();
+  const days = Math.floor(diff / 86400000);
+  if (days === 0) return 'today';
+  if (days === 1) return 'yesterday';
+  return `${days} days ago`;
+}
+
+function weekLabel(weeksAgo: number): string {
+  if (weeksAgo === 0) return 'Now';
+  if (weeksAgo === 1) return '1 wk';
+  return `${weeksAgo} wks`;
+}
+
+function Panel({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div style={{ background: '#fff', borderRadius: 18, padding: 18, border: '1px solid #EDE5DA', boxShadow: '0 1px 6px rgba(44,44,44,0.05)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <p style={{ fontSize: 15, fontWeight: 700, color: '#2C2C2C', margin: 0 }}>{title}</p>
+      {children}
+    </div>
+  );
+}
+
+function CategoryBars({ data }: { data: CategoryStat[] }) {
+  const maxTotal = Math.max(...data.map((d) => d.total), 1);
+  if (data.length === 0) return <p style={{ fontSize: 14, color: '#B0A8A0', fontStyle: 'italic', margin: 0 }}>No tasks yet — add some!</p>;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {data.map((row) => {
+        const pct = row.total / maxTotal;
+        const donePct = row.total > 0 ? row.done / row.total : 0;
+        return (
+          <div key={row.tag} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#5C4A38' }}>{tagEmoji(row.tag)} {row.tag}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ flex: 1, height: 10, borderRadius: 5, overflow: 'hidden', background: '#F5EDE4', display: 'flex' }}>
+                <div style={{ width: `${pct * donePct * 100}%`, background: '#5A9E8A', height: '100%' }} />
+                <div style={{ width: `${pct * (1 - donePct) * 100}%`, background: '#F4945A', height: '100%' }} />
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#2C2C2C', width: 24, textAlign: 'right' }}>{row.total}</span>
+            </div>
+            <span style={{ fontSize: 11, color: '#B0A8A0' }}>{row.done} done · {row.pending} pending</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function FairnessPanel({ data }: { data: FairnessStat[] }) {
+  const total = data.reduce((s, d) => s + d.completed, 0);
+  const juliShare = total > 0 ? (data.find((d) => d.user_id === 'juli')?.completed ?? 0) / total : 0.5;
+  return (
+    <div>
+      <p style={{ fontSize: 13, color: '#8A7F77', fontStyle: 'italic', margin: '0 0 10px' }}>How the load has been shared</p>
+      <div style={{ display: 'flex', gap: 10 }}>
+        {data.map((d) => (
+          <div key={d.user_id} style={{ flex: 1, background: '#FDF6EE', borderRadius: 12, padding: 14, border: '1px solid #EDE5DA', display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <p style={{ fontSize: 16, fontWeight: 700, color: '#2C2C2C', margin: 0 }}>{d.name}</p>
+            <p style={{ fontSize: 13, color: '#5C4A38', margin: 0 }}><span style={{ fontWeight: 700, fontSize: 16, color: '#D4845A' }}>{d.completed}</span>  ✅ completed</p>
+            <p style={{ fontSize: 13, color: '#5C4A38', margin: 0 }}><span style={{ fontWeight: 700, fontSize: 16, color: '#D4845A' }}>{d.on_it}</span>  💪 on it now</p>
+          </div>
+        ))}
+      </div>
+      {total > 0 && (
+        <>
+          <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', marginTop: 12 }}>
+            <div style={{ flex: juliShare, background: '#D4845A' }} />
+            <div style={{ flex: 1 - juliShare, background: '#5A9E8A' }} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+            <span style={{ fontSize: 11, color: '#D4845A', fontWeight: 600 }}>Juli {Math.round(juliShare * 100)}%</span>
+            <span style={{ fontSize: 11, color: '#5A9E8A', fontWeight: 600 }}>{Math.round((1 - juliShare) * 100)}% Gino</span>
+          </div>
+        </>
+      )}
+      {total === 0 && <p style={{ fontSize: 14, color: '#B0A8A0', fontStyle: 'italic', margin: '10px 0 0' }}>No completed tasks yet this period.</p>}
+    </div>
+  );
+}
+
+function TrendBars({ data }: { data: WeekStat[] }) {
+  const maxTotal = Math.max(...data.map((d) => d.total), 1);
+  const BAR_HEIGHT = 80;
+  if (data.every((d) => d.total === 0)) return <p style={{ fontSize: 14, color: '#B0A8A0', fontStyle: 'italic', margin: 0 }}>No tasks in the past 4 weeks.</p>;
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'flex-end' }}>
+      {data.map((week) => {
+        const barH = (week.total / maxTotal) * BAR_HEIGHT;
+        const doneH = week.total > 0 ? (week.done / week.total) * barH : 0;
+        const pendingH = barH - doneH;
+        return (
+          <div key={week.weeks_ago} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#2C2C2C', height: 16 }}>{week.total > 0 ? week.total : ''}</span>
+            <div style={{ height: BAR_HEIGHT, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', width: '60%' }}>
+              <div style={{ borderRadius: 4, overflow: 'hidden', display: 'flex', flexDirection: 'column-reverse' }}>
+                <div style={{ height: doneH, background: '#5A9E8A' }} />
+                <div style={{ height: pendingH, background: '#F4945A' }} />
+              </div>
+            </div>
+            <span style={{ fontSize: 11, color: '#B0A8A0' }}>{weekLabel(week.weeks_ago)}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function Legend() {
+  return (
+    <div style={{ display: 'flex', gap: 14, marginTop: 2 }}>
+      {[{ color: '#5A9E8A', label: 'Done' }, { color: '#F4945A', label: 'Pending' }].map(({ color, label }) => (
+        <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ width: 8, height: 8, borderRadius: 4, background: color }} />
+          <span style={{ fontSize: 12, color: '#8A7F77' }}>{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function DashboardPage() {
+  const navigate = useNavigate();
+  const [period, setPeriod] = useState<Period>('month');
+  const [loading, setLoading] = useState(true);
+  const [categoryStats, setCategoryStats] = useState<CategoryStat[]>([]);
+  const [fairnessStats, setFairnessStats] = useState<FairnessStat[]>([]);
+  const [upcoming, setUpcoming] = useState<UpcomingCard[]>([]);
+  const [trend, setTrend] = useState<WeekStat[]>([]);
+  const [recentCompleted, setRecentCompleted] = useState<RecentCard[]>([]);
+
+  const fetchAll = useCallback(async (p: Period, silent = false) => {
+    if (!silent) setLoading(true);
+    try {
+      const [catRes, fairRes, upRes, trendRes, recentRes] = await Promise.all([
+        getStatsByCategory(p), getStatsFairness(p), getStatsUpcoming(), getStatsOverdueTrend(), getStatsRecentCompleted(),
+      ]);
+      setCategoryStats(catRes.data);
+      setFairnessStats(fairRes.data);
+      setUpcoming(upRes.data);
+      setTrend(trendRes.data);
+      setRecentCompleted(recentRes.data);
+    } catch { /* silently fail */ } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchAll(period); }, []);
+
+  const handlePeriodChange = (p: Period) => { setPeriod(p); fetchAll(p, true); };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Header */}
+      <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid #EDE5DA', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: '#2C2C2C', margin: 0 }}>Stats</h1>
+        <div style={{ display: 'flex', background: '#EDE5DA', borderRadius: 10, padding: 3, alignSelf: 'flex-start' }}>
+          {(['month', 'all'] as Period[]).map((p) => (
+            <button
+              key={p}
+              onClick={() => handlePeriodChange(p)}
+              style={{
+                padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer',
+                background: period === p ? '#fff' : 'transparent',
+                fontSize: 13, fontWeight: 600,
+                color: period === p ? '#2C2C2C' : '#8A7F77',
+                boxShadow: period === p ? '0 1px 4px rgba(0,0,0,0.06)' : 'none',
+              }}
+            >
+              {p === 'month' ? 'This Month' : 'All Time'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
+        {loading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
+            <div style={{ width: 32, height: 32, border: '3px solid #EDE5DA', borderTopColor: '#D4845A', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          </div>
+        ) : (
+          <>
+            <Panel title="📊 Tasks by Category">
+              <CategoryBars data={categoryStats} />
+              <Legend />
+            </Panel>
+
+            <Panel title="⚖️ Fairness Overview">
+              <FairnessPanel data={fairnessStats} />
+            </Panel>
+
+            <Panel title="📅 Upcoming — next 7 days">
+              {upcoming.length === 0 ? (
+                <p style={{ fontSize: 14, color: '#B0A8A0', fontStyle: 'italic', margin: 0 }}>Nothing due in the next 7 days 🌿</p>
+              ) : (
+                <div>
+                  {upcoming.map((card) => (
+                    <button
+                      key={card.id}
+                      onClick={() => navigate(`/card/${card.id}`)}
+                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '10px 0', borderBottom: '1px solid #F5EDE4', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', gap: 8 }}
+                    >
+                      <div>
+                        <p style={{ fontSize: 14, fontWeight: 600, color: '#2C2C2C', margin: 0 }}>{card.title}</p>
+                        {card.tag && <p style={{ fontSize: 12, color: '#8A7F77', margin: 0 }}>{tagEmoji(card.tag)} {card.tag}</p>}
+                      </div>
+                      <span style={{ fontSize: 12, color: '#D4845A', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        {card.timeline === 'today' ? 'Today' : card.timeline === 'this_week' ? 'This week' : card.custom_date ? new Date(card.custom_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </Panel>
+
+            <Panel title="📈 Activity trend">
+              <p style={{ fontSize: 12, color: '#8A7F77', margin: '-6px 0 0' }}>Tasks created per week (past 4 weeks)</p>
+              <TrendBars data={trend} />
+              <Legend />
+            </Panel>
+
+            <Panel title="✅ Recently completed">
+              {recentCompleted.length === 0 ? (
+                <p style={{ fontSize: 14, color: '#B0A8A0', fontStyle: 'italic', margin: 0 }}>No completed tasks yet.</p>
+              ) : (
+                <div>
+                  {recentCompleted.map((card) => (
+                    <button
+                      key={card.id}
+                      onClick={() => navigate(`/card/${card.id}`)}
+                      style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '10px 0', borderBottom: '1px solid #F5EDE4', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', gap: 12 }}
+                    >
+                      <span style={{ fontSize: 18 }}>✅</span>
+                      <div>
+                        <p style={{ fontSize: 14, fontWeight: 600, color: '#2C2C2C', margin: 0 }}>{card.title}</p>
+                        <p style={{ fontSize: 12, color: '#8A7F77', margin: 0 }}>Done by {card.status_user_id === 'juli' ? 'Juli' : 'Gino'} · {timeAgo(card.status_updated_at)}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </Panel>
+
+            <div style={{ height: 24 }} />
+          </>
+        )}
+      </div>
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}

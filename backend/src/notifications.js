@@ -1,7 +1,11 @@
-const { Expo } = require('expo-server-sdk');
+const webPush = require('web-push');
 const pool = require('./db');
 
-const expo = new Expo();
+webPush.setVapidDetails(
+  process.env.VAPID_SUBJECT || 'mailto:admin@example.com',
+  process.env.VAPID_PUBLIC_KEY || '',
+  process.env.VAPID_PRIVATE_KEY || ''
+);
 
 // Do Not Disturb: 10 PM – 8 AM in the configured timezone
 function isDND() {
@@ -15,12 +19,17 @@ function isDND() {
   return hour >= 22 || hour < 8;
 }
 
-async function getToken(userId) {
+async function getSubscription(userId) {
   const { rows } = await pool.query(
     'SELECT token FROM push_tokens WHERE user_id = $1',
     [userId]
   );
-  return rows[0]?.token ?? null;
+  if (!rows[0]?.token) return null;
+  try {
+    return JSON.parse(rows[0].token);
+  } catch {
+    return null;
+  }
 }
 
 async function sendPush(userId, title, body) {
@@ -29,15 +38,17 @@ async function sendPush(userId, title, body) {
     return;
   }
 
-  const token = await getToken(userId);
-  if (!token || !Expo.isExpoPushToken(token)) return;
+  const subscription = await getSubscription(userId);
+  if (!subscription) return;
 
   try {
-    await expo.sendPushNotificationsAsync([
-      { to: token, sound: 'default', title, body },
-    ]);
+    await webPush.sendNotification(subscription, JSON.stringify({ title, body }));
   } catch (err) {
-    console.error(`Push notification to ${userId} failed:`, err);
+    console.error(`Push notification to ${userId} failed:`, err.message);
+    // Clean up expired/invalid subscriptions
+    if (err.statusCode === 410 || err.statusCode === 404) {
+      await pool.query('DELETE FROM push_tokens WHERE user_id = $1', [userId]);
+    }
   }
 }
 
@@ -47,6 +58,11 @@ async function notifyOther(currentUserId, title, body) {
   await sendPush(other, title, body);
 }
 
+// Notify both people
+async function notifyBoth(title, body) {
+  await Promise.all([sendPush('juli', title, body), sendPush('gino', title, body)]);
+}
+
 const userName = (id) => (id === 'juli' ? 'Juli' : 'Gino');
 
-module.exports = { sendPush, notifyOther, userName };
+module.exports = { sendPush, notifyOther, notifyBoth, userName };
