@@ -127,6 +127,36 @@ router.get('/fairness', async (req, res) => {
   }
 });
 
+// GET /stats/personal?userId=...&period=month|all — personal accomplishments for one user
+router.get('/personal', async (req, res) => {
+  const { userId, period = 'month' } = req.query;
+  if (!userId) return res.status(400).json({ error: 'userId is required' });
+  try {
+    const [completedRes, onItRes, weekRes] = await Promise.all([
+      pool.query(`
+        SELECT COUNT(*)::int AS completed FROM cards
+        WHERE status = 'done' AND status_user_id = $1 ${completedFilter(period)}
+      `, [userId]),
+      pool.query(`
+        SELECT COUNT(*)::int AS on_it FROM cards
+        WHERE status = 'on_it' AND status_user_id = $1
+      `, [userId]),
+      pool.query(`
+        SELECT COUNT(*)::int AS completed_this_week FROM cards
+        WHERE status = 'done' AND status_user_id = $1
+          AND status_updated_at >= DATE_TRUNC('week', CURRENT_DATE)
+      `, [userId]),
+    ]);
+    res.json({
+      completed: completedRes.rows[0]?.completed ?? 0,
+      on_it: onItRes.rows[0]?.on_it ?? 0,
+      completed_this_week: weekRes.rows[0]?.completed_this_week ?? 0,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /stats/recent-completed — last 5 completed cards
 router.get('/recent-completed', async (req, res) => {
   try {

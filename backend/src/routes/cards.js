@@ -34,7 +34,7 @@ async function fetchCardFull(id) {
   return rows[0] ?? null;
 }
 
-// Feed query: card with reactions + subtask counts (no full subtask list needed for the list view)
+// Feed query: card with reactions + subtask counts + comment count
 const CARD_WITH_REACTIONS = `
   SELECT c.*,
     COALESCE(
@@ -43,8 +43,11 @@ const CARD_WITH_REACTIONS = `
       )) FILTER (WHERE r.id IS NOT NULL),
       '[]'
     ) AS reactions,
-    (SELECT COUNT(*)::int FROM subtasks WHERE card_id = c.id)                    AS subtask_count,
-    (SELECT COUNT(*)::int FROM subtasks WHERE card_id = c.id AND status = 'done') AS subtask_done_count
+    (SELECT COUNT(*)::int FROM subtasks WHERE card_id = c.id)                           AS subtask_count,
+    (SELECT COUNT(*)::int FROM subtasks WHERE card_id = c.id AND status = 'done')        AS subtask_done_count,
+    (SELECT COUNT(*)::int FROM comments  WHERE card_id = c.id)                           AS comment_count,
+    (SELECT COUNT(*)::int FROM subtasks  WHERE card_id = c.id AND assigned_to = 'juli' AND status != 'done') AS juli_subtask_count,
+    (SELECT COUNT(*)::int FROM subtasks  WHERE card_id = c.id AND assigned_to = 'gino' AND status != 'done') AS gino_subtask_count
   FROM cards c
   LEFT JOIN reactions r ON r.card_id = c.id
 `;

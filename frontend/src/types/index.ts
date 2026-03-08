@@ -45,6 +45,9 @@ export interface Card {
   subtasks?: Subtask[];
   subtask_count?: number;
   subtask_done_count?: number;
+  comment_count?: number;
+  juli_subtask_count?: number;
+  gino_subtask_count?: number;
 }
 
 export interface Comment {

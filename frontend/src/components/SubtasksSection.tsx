@@ -3,8 +3,10 @@ import { addSubtask, updateSubtask, deleteSubtask } from '@/lib/api';
 import type { Subtask, AssignedTo } from '@/types';
 
 const ASSIGNED_LABEL: Record<string, string> = {
-  either: '', juli: 'Juli', gino: 'Gino', together: 'Both',
+  either: 'Either', juli: 'Juli', gino: 'Gino', together: 'Both',
 };
+
+const ASSIGN_CYCLE: AssignedTo[] = ['either', 'juli', 'gino', 'together'];
 
 const ASSIGNMENTS: { value: AssignedTo; label: string }[] = [
   { value: 'either', label: 'Either' },
@@ -34,9 +36,16 @@ export function SubtasksSection({ cardId, subtasks, currentUserId, onUpdate }: P
     try {
       await updateSubtask(cardId, subtask.id, { status: next, status_user_id: currentUserId });
       onUpdate();
-    } catch {
-      // silently ignore
-    }
+    } catch { /* silently ignore */ }
+  };
+
+  const handleAssigneeChange = async (subtask: Subtask) => {
+    const currentIdx = ASSIGN_CYCLE.indexOf(subtask.assigned_to);
+    const next = ASSIGN_CYCLE[(currentIdx + 1) % ASSIGN_CYCLE.length];
+    try {
+      await updateSubtask(cardId, subtask.id, { assigned_to: next });
+      onUpdate();
+    } catch { /* silently ignore */ }
   };
 
   const handleDelete = async (subtask: Subtask) => {
@@ -44,9 +53,7 @@ export function SubtasksSection({ cardId, subtasks, currentUserId, onUpdate }: P
     try {
       await deleteSubtask(cardId, subtask.id);
       onUpdate();
-    } catch {
-      // silently ignore
-    }
+    } catch { /* silently ignore */ }
   };
 
   const handleAdd = async () => {
@@ -59,9 +66,7 @@ export function SubtasksSection({ cardId, subtasks, currentUserId, onUpdate }: P
       setNewAssigned('either');
       setShowAdd(false);
       onUpdate();
-    } catch {
-      // silently ignore
-    } finally {
+    } catch { /* silently ignore */ } finally {
       setAdding(false);
     }
   };
@@ -74,13 +79,13 @@ export function SubtasksSection({ cardId, subtasks, currentUserId, onUpdate }: P
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#8A7F77', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.8 }}>
             Steps
           </span>
           {subtasks.length > 0 && (
             <span style={{
-              background: allDone ? '#E8F4F0' : '#F5EDE4',
-              color: allDone ? '#5A9E8A' : '#8A7F77',
+              background: allDone ? 'var(--teal-light)' : '#F5EDE4',
+              color: allDone ? 'var(--teal)' : 'var(--muted)',
               fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
             }}>
               {doneCount}/{subtasks.length} done
@@ -89,38 +94,36 @@ export function SubtasksSection({ cardId, subtasks, currentUserId, onUpdate }: P
         </div>
         <button
           onClick={() => { setShowAdd((v) => !v); setNewTitle(''); }}
-          style={{ fontSize: 14, color: '#5B9BD5', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          style={{ fontSize: 14, color: 'var(--blue)', fontWeight: 600 }}
         >
           {showAdd ? 'Cancel' : '+ Add step'}
         </button>
       </div>
 
-      {/* Empty state */}
       {subtasks.length === 0 && !showAdd && (
-        <p style={{ fontSize: 13, color: '#B0A8A0', fontStyle: 'italic', textAlign: 'center', padding: '12px 0', margin: 0 }}>
+        <p style={{ fontSize: 13, color: 'var(--light-muted)', fontStyle: 'italic', textAlign: 'center', padding: '12px 0', margin: 0 }}>
           Break this task into steps — tap "Add step" to get started
         </p>
       )}
 
-      {/* Subtask rows */}
       {subtasks.map((subtask) => (
         <SubtaskRow
           key={subtask.id}
           subtask={subtask}
           onStatusTap={() => handleStatusTap(subtask)}
+          onAssigneeChange={() => handleAssigneeChange(subtask)}
           onDelete={() => handleDelete(subtask)}
         />
       ))}
 
-      {/* Add form */}
       {showAdd && (
         <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <input
             type="text"
             style={{
-              border: '1.5px solid #D4845A', borderRadius: 10, padding: 12,
-              fontSize: 15, color: '#2C2C2C', background: '#fff', width: '100%',
-              boxSizing: 'border-box', fontFamily: 'inherit',
+              border: '1.5px solid var(--orange)', borderRadius: 12, padding: 12,
+              fontSize: 16, color: 'var(--text)', background: 'var(--surface)',
+              width: '100%', boxSizing: 'border-box',
             }}
             placeholder="What needs to happen?"
             value={newTitle}
@@ -134,11 +137,11 @@ export function SubtasksSection({ cardId, subtasks, currentUserId, onUpdate }: P
                 key={a.value}
                 onClick={() => setNewAssigned(a.value)}
                 style={{
-                  padding: '6px 12px', borderRadius: 8, fontSize: 13, fontWeight: newAssigned === a.value ? 600 : 500,
-                  border: `1.5px solid ${newAssigned === a.value ? '#D4845A' : '#EDE5DA'}`,
-                  background: newAssigned === a.value ? '#FDF0E8' : '#fff',
-                  color: newAssigned === a.value ? '#D4845A' : '#8A7F77',
-                  cursor: 'pointer',
+                  padding: '6px 12px', borderRadius: 8, fontSize: 13,
+                  fontWeight: newAssigned === a.value ? 600 : 500,
+                  border: `1.5px solid ${newAssigned === a.value ? 'var(--orange)' : 'var(--border)'}`,
+                  background: newAssigned === a.value ? 'var(--orange-light)' : 'var(--surface)',
+                  color: newAssigned === a.value ? 'var(--orange)' : 'var(--muted)',
                 }}
               >
                 {a.label}
@@ -148,11 +151,8 @@ export function SubtasksSection({ cardId, subtasks, currentUserId, onUpdate }: P
           <button
             onClick={handleAdd}
             disabled={!newTitle.trim() || adding}
-            style={{
-              background: '#D4845A', color: '#fff', border: 'none', borderRadius: 10,
-              padding: '11px 0', fontSize: 15, fontWeight: 700, cursor: 'pointer',
-              opacity: (!newTitle.trim() || adding) ? 0.4 : 1,
-            }}
+            className="btn-primary"
+            style={{ opacity: (!newTitle.trim() || adding) ? 0.4 : 1 }}
           >
             {adding ? 'Adding...' : 'Add step'}
           </button>
@@ -162,10 +162,11 @@ export function SubtasksSection({ cardId, subtasks, currentUserId, onUpdate }: P
   );
 }
 
-function SubtaskRow({
-  subtask, onStatusTap, onDelete,
-}: {
-  subtask: Subtask; onStatusTap: () => void; onDelete: () => void;
+function SubtaskRow({ subtask, onStatusTap, onAssigneeChange, onDelete }: {
+  subtask: Subtask;
+  onStatusTap: () => void;
+  onAssigneeChange: () => void;
+  onDelete: () => void;
 }) {
   const isDone = subtask.status === 'done';
   const isOnIt = subtask.status === 'on_it';
@@ -173,53 +174,59 @@ function SubtaskRow({
 
   return (
     <div style={{
-      display: 'flex', alignItems: 'flex-start', paddingTop: 10, paddingBottom: 10,
-      borderBottom: '1px solid #F5EDE4', gap: 10,
+      display: 'flex', alignItems: 'flex-start',
+      padding: '11px 0', borderBottom: '1px solid var(--border-soft)', gap: 10,
     }}>
       {/* Status circle */}
       <button
         onClick={onStatusTap}
         style={{
-          width: 22, height: 22, borderRadius: 11, flexShrink: 0,
-          border: `2px solid ${isDone ? '#5A9E8A' : isOnIt ? '#D4845A' : '#C0B5AC'}`,
-          background: isDone ? '#5A9E8A' : isOnIt ? '#FDF0E8' : 'transparent',
+          width: 24, height: 24, borderRadius: 12, flexShrink: 0,
+          border: `2px solid ${isDone ? 'var(--teal)' : isOnIt ? 'var(--orange)' : 'var(--light-muted)'}`,
+          background: isDone ? 'var(--teal)' : isOnIt ? 'var(--orange-light)' : 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', padding: 0, marginTop: 1,
+          marginTop: 1, transition: 'background 0.2s, border-color 0.2s',
         }}
       >
-        {isDone && <span style={{ color: '#fff', fontSize: 12, fontWeight: 700, lineHeight: 1 }}>✓</span>}
-        {isOnIt && <span style={{ width: 8, height: 8, borderRadius: 4, background: '#D4845A', display: 'block' }} />}
+        {isDone && <span style={{ color: '#fff', fontSize: 13, fontWeight: 700, lineHeight: 1 }}>✓</span>}
+        {isOnIt && <span style={{ width: 8, height: 8, borderRadius: 4, background: 'var(--orange)', display: 'block' }} />}
       </button>
 
       {/* Content */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
         <span style={{
-          fontSize: 15, color: isDone ? '#B0A8A0' : '#2C2C2C', fontWeight: 500,
-          textDecoration: isDone ? 'line-through' : 'none', lineHeight: 1.35,
+          fontSize: 15, color: isDone ? 'var(--light-muted)' : 'var(--text)',
+          fontWeight: 500, textDecoration: isDone ? 'line-through' : 'none', lineHeight: 1.35,
         }}>
           {subtask.title}
         </span>
         {(isOnIt || isDone) && subtask.status_user_id && (
-          <span style={{ fontSize: 12, color: isDone ? '#5A9E8A' : '#D4845A', fontWeight: 500 }}>
+          <span style={{ fontSize: 12, color: isDone ? 'var(--teal)' : 'var(--orange)', fontWeight: 500 }}>
             {isDone ? `✓ Done by ${actorName}` : `💪 ${actorName} is on it`}
           </span>
         )}
       </div>
 
-      {/* Assignee badge */}
-      {subtask.assigned_to !== 'either' && (
-        <span style={{
-          background: '#F5EDE4', color: '#5C4A38', fontSize: 11, fontWeight: 600,
-          padding: '2px 7px', borderRadius: 6, alignSelf: 'flex-start', marginTop: 2,
-        }}>
-          {ASSIGNED_LABEL[subtask.assigned_to]}
-        </span>
-      )}
+      {/* Assignee badge — tap to cycle */}
+      <button
+        onClick={onAssigneeChange}
+        style={{
+          background: subtask.assigned_to === 'either' ? 'transparent' : 'var(--orange-light)',
+          border: `1.5px solid ${subtask.assigned_to === 'either' ? 'var(--border)' : 'var(--orange-soft)'}`,
+          color: subtask.assigned_to === 'either' ? 'var(--light-muted)' : 'var(--orange)',
+          fontSize: 11, fontWeight: 600, padding: '2px 7px', borderRadius: 8,
+          alignSelf: 'flex-start', marginTop: 3, cursor: 'pointer',
+          transition: 'background 0.15s, border-color 0.15s',
+        }}
+        title="Tap to change assignee"
+      >
+        {subtask.assigned_to === 'either' ? '· · ·' : ASSIGNED_LABEL[subtask.assigned_to]}
+      </button>
 
       {/* Delete */}
       <button
         onClick={onDelete}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: '#C0B5AC', padding: 0, lineHeight: 1, marginTop: 1 }}
+        style={{ fontSize: 20, color: 'var(--light-muted)', padding: 0, lineHeight: 1, marginTop: 2 }}
       >
         ×
       </button>

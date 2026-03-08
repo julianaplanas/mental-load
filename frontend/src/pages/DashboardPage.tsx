@@ -2,14 +2,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   getStatsByCategory, getStatsUpcoming, getStatsOverdueTrend,
-  getStatsFairness, getStatsRecentCompleted,
+  getStatsRecentCompleted, getStatsPersonal,
 } from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
 import { PRESET_TAGS } from '@/types';
 
 interface CategoryStat { tag: string; pending: number; done: number; total: number; }
 interface UpcomingCard { id: string; title: string; timeline: string; custom_date?: string | null; assigned_to: string; priority: string; tag?: string | null; }
 interface WeekStat { weeks_ago: number; pending: number; done: number; total: number; }
-interface FairnessStat { user_id: string; name: string; completed: number; on_it: number; }
+interface PersonalStat { completed: number; on_it: number; completed_this_week: number; }
 interface RecentCard { id: string; title: string; tag?: string | null; status_user_id: string; status_updated_at: string; }
 
 type Period = 'month' | 'all';
@@ -67,34 +68,31 @@ function CategoryBars({ data }: { data: CategoryStat[] }) {
   );
 }
 
-function FairnessPanel({ data }: { data: FairnessStat[] }) {
-  const total = data.reduce((s, d) => s + d.completed, 0);
-  const juliShare = total > 0 ? (data.find((d) => d.user_id === 'juli')?.completed ?? 0) / total : 0.5;
+function PersonalAccomplishments({ data, userName }: { data: PersonalStat; userName: string }) {
   return (
-    <div>
-      <p style={{ fontSize: 13, color: '#8A7F77', fontStyle: 'italic', margin: '0 0 10px' }}>How the load has been shared</p>
-      <div style={{ display: 'flex', gap: 10 }}>
-        {data.map((d) => (
-          <div key={d.user_id} style={{ flex: 1, background: '#FDF6EE', borderRadius: 12, padding: 14, border: '1px solid #EDE5DA', display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <p style={{ fontSize: 16, fontWeight: 700, color: '#2C2C2C', margin: 0 }}>{d.name}</p>
-            <p style={{ fontSize: 13, color: '#5C4A38', margin: 0 }}><span style={{ fontWeight: 700, fontSize: 16, color: '#D4845A' }}>{d.completed}</span>  ✅ completed</p>
-            <p style={{ fontSize: 13, color: '#5C4A38', margin: 0 }}><span style={{ fontWeight: 700, fontSize: 16, color: '#D4845A' }}>{d.on_it}</span>  💪 on it now</p>
-          </div>
-        ))}
-      </div>
-      {total > 0 && (
-        <>
-          <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', marginTop: 12 }}>
-            <div style={{ flex: juliShare, background: '#D4845A' }} />
-            <div style={{ flex: 1 - juliShare, background: '#5A9E8A' }} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-            <span style={{ fontSize: 11, color: '#D4845A', fontWeight: 600 }}>Juli {Math.round(juliShare * 100)}%</span>
-            <span style={{ fontSize: 11, color: '#5A9E8A', fontWeight: 600 }}>{Math.round((1 - juliShare) * 100)}% Gino</span>
-          </div>
-        </>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {data.completed_this_week > 0 && (
+        <div style={{ background: '#E8F4F0', borderRadius: 12, padding: 14 }}>
+          <p style={{ fontSize: 14, fontWeight: 700, color: '#5A9E8A', margin: 0 }}>
+            🎉 {userName} completed {data.completed_this_week} task{data.completed_this_week !== 1 ? 's' : ''} this week!
+          </p>
+        </div>
       )}
-      {total === 0 && <p style={{ fontSize: 14, color: '#B0A8A0', fontStyle: 'italic', margin: '10px 0 0' }}>No completed tasks yet this period.</p>}
+      <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ flex: 1, background: '#E8F4F0', borderRadius: 12, padding: 14, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontSize: 32, fontWeight: 700, color: '#5A9E8A' }}>{data.completed}</span>
+          <span style={{ fontSize: 13, color: '#5A9E8A', fontWeight: 500 }}>✅ completed</span>
+        </div>
+        <div style={{ flex: 1, background: '#FDF0E8', borderRadius: 12, padding: 14, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontSize: 32, fontWeight: 700, color: '#D4845A' }}>{data.on_it}</span>
+          <span style={{ fontSize: 13, color: '#D4845A', fontWeight: 500 }}>💪 on it now</span>
+        </div>
+      </div>
+      {data.completed === 0 && data.on_it === 0 && (
+        <p style={{ fontSize: 14, color: '#B0A8A0', fontStyle: 'italic', margin: 0 }}>
+          Nothing yet this period — you're all caught up! 🌿
+        </p>
+      )}
     </div>
   );
 }
@@ -141,10 +139,11 @@ function Legend() {
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const { userId } = useAuth();
   const [period, setPeriod] = useState<Period>('month');
   const [loading, setLoading] = useState(true);
   const [categoryStats, setCategoryStats] = useState<CategoryStat[]>([]);
-  const [fairnessStats, setFairnessStats] = useState<FairnessStat[]>([]);
+  const [personalStats, setPersonalStats] = useState<PersonalStat>({ completed: 0, on_it: 0, completed_this_week: 0 });
   const [upcoming, setUpcoming] = useState<UpcomingCard[]>([]);
   const [trend, setTrend] = useState<WeekStat[]>([]);
   const [recentCompleted, setRecentCompleted] = useState<RecentCard[]>([]);
@@ -152,18 +151,18 @@ export default function DashboardPage() {
   const fetchAll = useCallback(async (p: Period, silent = false) => {
     if (!silent) setLoading(true);
     try {
-      const [catRes, fairRes, upRes, trendRes, recentRes] = await Promise.all([
-        getStatsByCategory(p), getStatsFairness(p), getStatsUpcoming(), getStatsOverdueTrend(), getStatsRecentCompleted(),
+      const [catRes, personalRes, upRes, trendRes, recentRes] = await Promise.all([
+        getStatsByCategory(p), getStatsPersonal(userId!, p), getStatsUpcoming(), getStatsOverdueTrend(), getStatsRecentCompleted(),
       ]);
       setCategoryStats(catRes.data);
-      setFairnessStats(fairRes.data);
+      setPersonalStats(personalRes.data);
       setUpcoming(upRes.data);
       setTrend(trendRes.data);
       setRecentCompleted(recentRes.data);
     } catch { /* silently fail */ } finally {
       setLoading(false);
     }
-  }, []);
+  }, [userId]);
 
   useEffect(() => { fetchAll(period); }, []);
 
@@ -206,8 +205,8 @@ export default function DashboardPage() {
               <Legend />
             </Panel>
 
-            <Panel title="⚖️ Fairness Overview">
-              <FairnessPanel data={fairnessStats} />
+            <Panel title="⭐ Your Accomplishments">
+              <PersonalAccomplishments data={personalStats} userName={userId === 'juli' ? 'Juli' : 'Gino'} />
             </Panel>
 
             <Panel title="📅 Upcoming — next 7 days">
@@ -262,7 +261,7 @@ export default function DashboardPage() {
               )}
             </Panel>
 
-            <div style={{ height: 24 }} />
+            <div style={{ height: 8 }} />
           </>
         )}
       </div>

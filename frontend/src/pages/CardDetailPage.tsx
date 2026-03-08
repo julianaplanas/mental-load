@@ -35,10 +35,18 @@ export default function CardDetailPage() {
   const [waitingNote, setWaitingNote] = useState('');
   const [showWaitingInput, setShowWaitingInput] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [showSnoozeSheet, setShowSnoozeSheet] = useState(false);
+  const [showDeleteSheet, setShowDeleteSheet] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
   const [groceryItem, setGroceryItem] = useState('');
   const [showGroceryAdd, setShowGroceryAdd] = useState(false);
   const [groceryAdding, setGroceryAdding] = useState(false);
   const [groceryConfirm, setGroceryConfirm] = useState(false);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 4000);
+  };
 
   const fetchCard = useCallback(async () => {
     if (!id) return;
@@ -89,13 +97,18 @@ export default function CardDetailPage() {
     doUpdate({ status: isOwner ? 'pending' : 'on_it' });
   };
 
-  const handleDone = () => {
-    const isRecurring = card?.is_recurring;
-    const message = isRecurring
-      ? `"${card?.title}" will be marked done and a new instance created. 🔁`
-      : `Mark "${card?.title}" as done?`;
-    if (!confirm(message)) return;
-    doUpdate({ status: 'done' });
+  const handleDone = async () => {
+    if (!card || !id) return;
+    setActionLoading(true);
+    try {
+      await updateCard(card.id, { status: 'done', current_user_id: userId });
+      await fetchCard();
+      showToast(card.is_recurring ? '✅ Done! A new recurring task was created 🔁' : '🎉 Done! Great work!');
+    } catch {
+      showToast('Could not update. Please try again.');
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleWaiting = () => {
@@ -108,19 +121,34 @@ export default function CardDetailPage() {
     }
   };
 
-  const handleSnooze = () => {
-    const count = card?.snooze_count ?? 0;
-    const message = count >= 2
-      ? 'This has been snoozed a few times — want to tackle it together or reassign it?'
-      : 'This task will be pushed forward by 7 days.';
-    if (!confirm(message)) return;
-    doUpdate({ status: 'snoozed' });
+  const handleSnooze = () => setShowSnoozeSheet(true);
+
+  const confirmSnooze = async () => {
+    setShowSnoozeSheet(false);
+    if (!card || !id) return;
+    setActionLoading(true);
+    try {
+      await updateCard(card.id, { status: 'snoozed', current_user_id: userId });
+      await fetchCard();
+      showToast('😴 Snoozed for 7 days');
+    } catch {
+      showToast('Could not snooze. Please try again.');
+    } finally {
+      setActionLoading(false);
+    }
   };
 
-  const handleDelete = async () => {
-    if (!id || !confirm('Delete this task? This cannot be undone.')) return;
-    await deleteCard(id);
-    navigate('/tasks', { replace: true });
+  const handleDelete = () => setShowDeleteSheet(true);
+
+  const confirmDelete = async () => {
+    if (!id) return;
+    setShowDeleteSheet(false);
+    try {
+      await deleteCard(id);
+      navigate('/tasks', { replace: true });
+    } catch {
+      showToast('Could not delete. Please try again.');
+    }
   };
 
   if (loading) {
@@ -280,6 +308,65 @@ export default function CardDetailPage() {
       </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+
+      {/* Snooze confirmation sheet */}
+      {showSnoozeSheet && (() => {
+        const snoozeDate = new Date();
+        snoozeDate.setDate(snoozeDate.getDate() + 7);
+        const snoozeDateStr = snoozeDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        const snoozeCount = card?.snooze_count ?? 0;
+        return (
+          <div className="sheet-overlay" onClick={() => setShowSnoozeSheet(false)}>
+            <div className="sheet" onClick={(e) => e.stopPropagation()}>
+              <div className="sheet-handle" />
+              <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', margin: '0 0 8px' }}>Snooze this task?</p>
+              <p style={{ fontSize: 14, color: 'var(--muted)', margin: '0 0 20px', lineHeight: 1.5 }}>
+                {snoozeCount >= 2
+                  ? 'This has been snoozed a few times — consider tackling it together or reassigning it.'
+                  : `This task will be pushed to ${snoozeDateStr}.`}
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <button className="btn-primary" style={{ width: '100%' }} onClick={confirmSnooze}>
+                  😴 Snooze to {snoozeDateStr}
+                </button>
+                <button className="btn-secondary" style={{ width: '100%' }} onClick={() => setShowSnoozeSheet(false)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Delete confirmation sheet */}
+      {showDeleteSheet && (
+        <div className="sheet-overlay" onClick={() => setShowDeleteSheet(false)}>
+          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="sheet-handle" />
+            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', margin: '0 0 8px' }}>Delete this task?</p>
+            <p style={{ fontSize: 14, color: 'var(--muted)', margin: '0 0 20px' }}>This can't be undone.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <button
+                onClick={confirmDelete}
+                style={{ width: '100%', background: 'var(--red)', border: 'none', borderRadius: 'var(--radius-btn)', padding: '13px 20px', fontWeight: 600, fontSize: 15, color: '#fff', cursor: 'pointer' }}
+              >
+                Delete
+              </button>
+              <button className="btn-secondary" style={{ width: '100%' }} onClick={() => setShowDeleteSheet(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div className="toast">
+          <span>{toast}</span>
+          <button className="toast-action" onClick={() => setToast(null)}>Dismiss</button>
+        </div>
+      )}
     </div>
   );
 }

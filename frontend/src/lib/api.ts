@@ -53,3 +53,5 @@ export const getStatsOverdueTrend = () => api.get('/stats/overdue-trend');
 export const getStatsFairness = (period: 'month' | 'all') =>
   api.get(`/stats/fairness?period=${period}`);
 export const getStatsRecentCompleted = () => api.get('/stats/recent-completed');
+export const getStatsPersonal = (userId: string, period: 'month' | 'all') =>
+  api.get(`/stats/personal?userId=${userId}&period=${period}`);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createCard, getCard, updateCard } from '@/lib/api';
+import { createCard, getCard, updateCard, addSubtask } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { enqueueAction } from '@/lib/offlineQueue';
 import { PRESET_TAGS } from '@/types';
@@ -81,6 +81,8 @@ export default function CardFormPage() {
   const [recurringFrequency, setRecurringFrequency] = useState<RecurringFrequency>('weekly');
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [pendingSubtasks, setPendingSubtasks] = useState<string[]>([]);
+  const [subtaskInput, setSubtaskInput] = useState('');
 
   useEffect(() => {
     if (!id) return;
@@ -129,7 +131,10 @@ export default function CardFormPage() {
         await updateCard(id, { ...cardData, custom_date: timeline === 'custom' ? customDate : null, recurring_frequency: isRecurring ? recurringFrequency : null, current_user_id: userId });
       } else {
         try {
-          await createCard({ ...cardData, created_by: userId });
+          const { data: created } = await createCard({ ...cardData, created_by: userId });
+          if (pendingSubtasks.length > 0) {
+            await Promise.all(pendingSubtasks.map((t) => addSubtask(created.id, { title: t, assigned_to: 'either' })));
+          }
         } catch (err: any) {
           if (!err.response) {
             enqueueAction('createCard', { ...cardData, created_by: userId });
@@ -294,6 +299,53 @@ export default function CardFormPage() {
             rows={3}
           />
         </FormSection>
+
+        {/* Subtasks — only for new cards */}
+        {!isEdit && (
+          <FormSection label="Steps (optional)">
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                type="text"
+                style={{ ...inputStyle, flex: 1, fontSize: 16 }}
+                placeholder="Add a step..."
+                value={subtaskInput}
+                onChange={(e) => setSubtaskInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const t = subtaskInput.trim();
+                    if (t) { setPendingSubtasks((prev) => [...prev, t]); setSubtaskInput(''); }
+                    e.preventDefault();
+                  }
+                }}
+              />
+              <button
+                onClick={() => {
+                  const t = subtaskInput.trim();
+                  if (t) { setPendingSubtasks((prev) => [...prev, t]); setSubtaskInput(''); }
+                }}
+                disabled={!subtaskInput.trim()}
+                style={{ background: '#D4845A', border: 'none', borderRadius: 10, padding: '0 16px', color: '#fff', fontWeight: 700, fontSize: 18, cursor: 'pointer', opacity: !subtaskInput.trim() ? 0.4 : 1, flexShrink: 0 }}
+              >
+                +
+              </button>
+            </div>
+            {pendingSubtasks.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+                {pendingSubtasks.map((t, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#FDF9F5', borderRadius: 10, padding: '8px 12px', border: '1px solid #EDE5DA' }}>
+                    <span style={{ flex: 1, fontSize: 14, color: '#2C2C2C' }}>{t}</span>
+                    <button
+                      onClick={() => setPendingSubtasks((prev) => prev.filter((_, idx) => idx !== i))}
+                      style={{ color: '#C0B5AC', fontSize: 18, lineHeight: 1, padding: 0, background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </FormSection>
+        )}
 
         <div style={{ height: 40 }} />
       </div>
