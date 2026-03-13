@@ -28,25 +28,28 @@ export default function TimelineBadge({ card, small }: Props) {
   const overdue = isOverdue(card);
 
   let label: string, bg: string;
-  if (overdue)                           { label = 'Overdue';    bg = '#E85555'; }
-  else if (card.timeline === 'today')    { label = 'Today';      bg = '#E85555'; }
-  else if (card.timeline === 'this_week'){ label = 'This week';  bg = '#F4945A'; }
-  else if (card.timeline === 'this_month'){ label = 'This month'; bg = '#5B9BD5'; }
+  if (overdue)                           { label = 'Overdue';    bg = 'var(--red)'; }
+  else if (card.timeline === 'today')    { label = 'Today';      bg = 'var(--red)'; }
+  else if (card.timeline === 'this_week'){ label = 'This week';  bg = 'var(--primary)'; }
+  else if (card.timeline === 'this_month'){ label = 'This month'; bg = 'var(--blue)'; }
   else if (card.timeline === 'custom' && card.custom_date) {
     const d = parseLocalDate(card.custom_date);
     label = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-    bg = '#5B9BD5';
-  } else { label = card.timeline; bg = '#8A7F77'; }
+    bg = 'var(--blue)';
+  } else { label = card.timeline; bg = 'var(--muted)'; }
+
+  const shouldPulse = overdue || card.timeline === 'today';
 
   return (
     <span style={{
       backgroundColor: bg,
       color: '#fff',
       fontSize: small ? 11 : 12,
-      fontWeight: 600,
-      padding: small ? '2px 6px' : '3px 8px',
-      borderRadius: small ? 4 : 6,
+      fontWeight: 700,
+      padding: small ? '2px 8px' : '3px 10px',
+      borderRadius: 50,
       whiteSpace: 'nowrap',
+      animation: shouldPulse ? 'pulse 2s ease-in-out infinite' : undefined,
     }}>
       {label}
     </span>

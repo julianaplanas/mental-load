@@ -6,9 +6,22 @@ import type { Card } from '@/types';
 
 const ASSIGNED: Record<string, string> = { juli: 'Juli', gino: 'Gino', together: 'Together', either: '' };
 
+const TAG_COLORS: Record<string, { bg: string; text: string }> = {
+  'House & Cleaning': { bg: '#FFF8E1', text: '#C49A20' },
+  'Groceries':        { bg: '#E6F9F0', text: '#2E9B6E' },
+  'Travel':           { bg: '#EBF3FB', text: '#4080C0' },
+  'Admin & Paperwork':{ bg: '#F3EDFA', text: '#7E57C2' },
+  'Health':           { bg: '#FFF0F4', text: '#D4577A' },
+  'Social Plans':     { bg: '#FFF0EB', text: '#D46840' },
+};
+
 function tagEmoji(tag: string | null | undefined): string {
   if (!tag) return '';
   return PRESET_TAGS.find((t) => t.name === tag)?.emoji ?? '🏷️';
+}
+
+function getTagColors(tag: string): { bg: string; text: string } {
+  return TAG_COLORS[tag] ?? { bg: 'var(--border-soft)', text: 'var(--text-soft)' };
 }
 
 export default function CardItem({ card }: { card: Card }) {
@@ -30,14 +43,17 @@ export default function CardItem({ card }: { card: Card }) {
       {/* Top row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
-          {card.tag && (
-            <span style={{
-              background: '#F5EDE4', color: '#5C4A38', fontSize: 12, fontWeight: 600,
-              padding: '3px 8px', borderRadius: 8, whiteSpace: 'nowrap',
-            }}>
-              {tagEmoji(card.tag)} {card.tag}
-            </span>
-          )}
+          {card.tag && (() => {
+            const colors = getTagColors(card.tag);
+            return (
+              <span style={{
+                background: colors.bg, color: colors.text, fontSize: 12, fontWeight: 700,
+                padding: '3px 10px', borderRadius: 50, whiteSpace: 'nowrap',
+              }}>
+                {tagEmoji(card.tag)} {card.tag}
+              </span>
+            );
+          })()}
           {card.priority !== 'normal' && (
             <span style={{ fontSize: 12 }}>
               {card.priority === 'urgent' ? '🔴' : '🟢'}
@@ -48,7 +64,7 @@ export default function CardItem({ card }: { card: Card }) {
       </div>
 
       {/* Title */}
-      <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', lineHeight: 1.35, margin: 0 }}>
+      <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', lineHeight: 1.35, margin: 0 }}>
         {card.title}
       </p>
 
@@ -56,31 +72,35 @@ export default function CardItem({ card }: { card: Card }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, flexWrap: 'wrap' }}>
           {card.assigned_to !== 'either' && (
-            <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+            <span style={{
+              fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 50,
+              background: card.assigned_to === 'juli' ? 'var(--juli-light)' : card.assigned_to === 'gino' ? 'var(--gino-light)' : 'var(--accent-light)',
+              color: card.assigned_to === 'juli' ? 'var(--juli)' : card.assigned_to === 'gino' ? 'var(--gino)' : 'var(--accent)',
+            }}>
               👤 {ASSIGNED[card.assigned_to]}
             </span>
           )}
           {card.status === 'on_it' && (
             <span style={{
-              background: 'var(--teal-light)', color: 'var(--teal)', fontSize: 11, fontWeight: 600,
-              padding: '2px 8px', borderRadius: 8,
+              background: 'var(--gino-light)', color: 'var(--gino)', fontSize: 11, fontWeight: 700,
+              padding: '2px 8px', borderRadius: 50,
             }}>
               {card.status_user_id === 'juli' ? 'Juli' : 'Gino'} is on it 💪
             </span>
           )}
           {card.status === 'waiting' && (
             <span style={{
-              background: '#FFF3E0', color: '#D4845A', fontSize: 11, fontWeight: 600,
-              padding: '2px 8px', borderRadius: 8,
+              background: 'var(--yellow-light)', color: '#B8930F', fontSize: 11, fontWeight: 700,
+              padding: '2px 8px', borderRadius: 50,
             }}>
-              Waiting on...
+              Waiting on... ⏳
             </span>
           )}
           {card.is_recurring && <span style={{ fontSize: 12 }}>🔁</span>}
           {hasMySubtask && (
             <span style={{
-              background: 'var(--blue-light)', color: 'var(--blue)', fontSize: 11, fontWeight: 600,
-              padding: '2px 8px', borderRadius: 8,
+              background: 'var(--blue-light)', color: 'var(--blue)', fontSize: 11, fontWeight: 700,
+              padding: '2px 8px', borderRadius: 50,
             }}>
               Your step
             </span>
@@ -94,9 +114,9 @@ export default function CardItem({ card }: { card: Card }) {
           )}
           {hasSubtasks && (
             <span style={{
-              background: allDone ? 'var(--teal-light)' : '#F5EDE4',
-              color: allDone ? 'var(--teal)' : 'var(--muted)',
-              fontSize: 11, fontWeight: 600, padding: '2px 7px', borderRadius: 8,
+              background: allDone ? 'var(--green-light)' : 'var(--border-soft)',
+              color: allDone ? 'var(--green)' : 'var(--muted)',
+              fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 50,
             }}>
               {card.subtask_done_count}/{card.subtask_count} ✓
             </span>

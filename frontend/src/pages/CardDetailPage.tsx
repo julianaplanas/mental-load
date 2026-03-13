@@ -154,8 +154,7 @@ export default function CardDetailPage() {
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-        <div style={{ width: 32, height: 32, border: '3px solid #EDE5DA', borderTopColor: '#D4845A', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        <div className="spinner" />
       </div>
     );
   }
@@ -170,12 +169,12 @@ export default function CardDetailPage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Nav */}
       <div className="nav-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', fontSize: 17, color: '#D4845A', fontWeight: 500, cursor: 'pointer', padding: 0 }}>
+        <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', fontSize: 17, color: 'var(--primary)', fontWeight: 600, cursor: 'pointer', padding: 0 }}>
           ‹ Back
         </button>
         <div style={{ display: 'flex', gap: 16 }}>
-          <button onClick={() => navigate(`/card/${id}/edit`)} style={{ background: 'none', border: 'none', fontSize: 15, color: '#5B9BD5', fontWeight: 500, cursor: 'pointer', padding: 0 }}>Edit</button>
-          <button onClick={handleDelete} style={{ background: 'none', border: 'none', fontSize: 15, color: '#E85555', cursor: 'pointer', padding: 0 }}>Delete</button>
+          <button onClick={() => navigate(`/card/${id}/edit`)} style={{ background: 'none', border: 'none', fontSize: 15, color: 'var(--blue)', fontWeight: 600, cursor: 'pointer', padding: 0 }}>Edit</button>
+          <button onClick={handleDelete} style={{ background: 'none', border: 'none', fontSize: 15, color: 'var(--red)', cursor: 'pointer', padding: 0, fontWeight: 600 }}>Delete</button>
         </div>
       </div>
 
@@ -183,30 +182,30 @@ export default function CardDetailPage() {
         {/* Header badges */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '20px 20px 8px', flexWrap: 'wrap' }}>
           <TimelineBadge card={card} />
-          {card.priority !== 'normal' && <span style={{ fontSize: 13, color: '#8A7F77', fontWeight: 500 }}>{PRIORITY_LABEL[card.priority]}</span>}
-          {card.snooze_count > 0 && <span style={{ fontSize: 13, color: '#B0A8A0', fontWeight: 500 }}>Snoozed {card.snooze_count}×</span>}
+          {card.priority !== 'normal' && <span style={{ fontSize: 13, color: 'var(--muted)', fontWeight: 600 }}>{PRIORITY_LABEL[card.priority]}</span>}
+          {card.snooze_count > 0 && <span style={{ fontSize: 13, color: 'var(--light-muted)', fontWeight: 600 }}>Snoozed {card.snooze_count}×</span>}
         </div>
 
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#2C2C2C', padding: '0 20px', margin: '0 0 12px', lineHeight: 1.3 }}>
+        <h1 style={{ fontSize: 26, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)', padding: '0 20px', margin: '0 0 12px', lineHeight: 1.3 }}>
           {card.title}
         </h1>
 
         {/* Status banners */}
         {card.status === 'on_it' && (
-          <div style={{ margin: '0 20px 12px', background: '#E8F4F0', borderRadius: 10, padding: 12 }}>
-            <p style={{ fontSize: 14, color: '#2C6E56', fontWeight: 500, margin: 0 }}>
-              {statusUserName} is on it 💪 <span style={{ color: '#8A7F77', fontWeight: 400, fontSize: 13 }}>· {formatTimestamp(card.status_updated_at)}</span>
+          <div style={{ margin: '0 20px 12px', background: 'var(--gino-light)', borderRadius: 16, padding: '12px 14px', borderLeft: `4px solid var(--gino)` }}>
+            <p style={{ fontSize: 14, color: 'var(--text)', fontWeight: 600, margin: 0 }}>
+              {statusUserName} is on it 💪 <span style={{ color: 'var(--muted)', fontWeight: 400, fontSize: 13 }}>· {formatTimestamp(card.status_updated_at)}</span>
             </p>
           </div>
         )}
         {card.status === 'waiting' && (
-          <div style={{ margin: '0 20px 12px', background: '#FFF3E0', borderRadius: 10, padding: 12 }}>
-            <p style={{ fontSize: 14, color: '#2C6E56', fontWeight: 500, margin: 0 }}>⏳ Waiting on...{card.status_note ? ` "${card.status_note}"` : ''}</p>
+          <div style={{ margin: '0 20px 12px', background: 'var(--yellow-light)', borderRadius: 16, padding: '12px 14px', borderLeft: '4px solid var(--yellow)' }}>
+            <p style={{ fontSize: 14, color: 'var(--text)', fontWeight: 600, margin: 0 }}>⏳ Waiting on...{card.status_note ? ` "${card.status_note}"` : ''}</p>
           </div>
         )}
         {card.status === 'snoozed' && (
-          <div style={{ margin: '0 20px 12px', background: '#F0F0F5', borderRadius: 10, padding: 12 }}>
-            <p style={{ fontSize: 14, color: '#2C6E56', fontWeight: 500, margin: 0 }}>
+          <div style={{ margin: '0 20px 12px', background: 'var(--accent-light)', borderRadius: 16, padding: '12px 14px', borderLeft: '4px solid var(--accent)' }}>
+            <p style={{ fontSize: 14, color: 'var(--text)', fontWeight: 600, margin: 0 }}>
               😴 Snoozed until {card.snoozed_until ?? 'next week'}
               {card.original_timeline ? ` (was: ${card.original_timeline.replace('_', ' ')})` : ''}
             </p>
@@ -214,7 +213,7 @@ export default function CardDetailPage() {
         )}
 
         {/* Fields */}
-        <div style={{ margin: '0 20px 24px', background: '#fff', borderRadius: 16, border: '1px solid #EDE5DA', overflow: 'hidden' }}>
+        <div style={{ margin: '0 20px 24px', background: 'var(--surface)', borderRadius: 20, border: '2px solid var(--border)', overflow: 'hidden' }}>
           {card.assigned_to !== 'either' && <FieldRow label="Who" value={`👤 ${ASSIGNED_LABEL[card.assigned_to]}`} />}
           {card.tag && <FieldRow label="Category" value={getTagDisplay(card.tag)} />}
           {card.is_recurring && card.recurring_frequency && <FieldRow label="Recurring" value={`🔁 ${FREQ_LABEL[card.recurring_frequency]}`} />}
@@ -225,11 +224,11 @@ export default function CardDetailPage() {
 
         {/* Actions */}
         <div style={{ padding: '0 20px 28px' }}>
-          <p style={{ fontSize: 13, fontWeight: 700, color: '#8A7F77', textTransform: 'uppercase', letterSpacing: 0.5, margin: '0 0 12px' }}>Actions</p>
+          <p style={{ fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.5, margin: '0 0 12px' }}>Actions</p>
           {showWaitingInput && (
             <input
               type="text"
-              style={{ width: '100%', border: '1.5px solid #D4845A', borderRadius: 10, padding: 12, fontSize: 15, color: '#2C2C2C', background: '#fff', marginBottom: 10, boxSizing: 'border-box', fontFamily: 'inherit' }}
+              style={{ width: '100%', border: '2px solid var(--primary)', borderRadius: 14, padding: 12, fontSize: 16, color: 'var(--text)', background: 'var(--surface)', marginBottom: 10, boxSizing: 'border-box', fontFamily: 'inherit' }}
               value={waitingNote}
               onChange={(e) => setWaitingNote(e.target.value)}
               placeholder="What are you waiting on?"
@@ -263,8 +262,8 @@ export default function CardDetailPage() {
         {card.tag === 'Groceries' && (
           <div style={{ padding: '0 20px 24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: '#8A7F77', textTransform: 'uppercase', letterSpacing: 0.5, margin: 0 }}>Add to grocery list</p>
-              <button onClick={() => setShowGroceryAdd((v) => !v)} style={{ background: 'none', border: 'none', fontSize: 14, color: '#5B9BD5', fontWeight: 600, cursor: 'pointer', padding: 0 }}>
+              <p style={{ fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.5, margin: 0 }}>Add to grocery list</p>
+              <button onClick={() => setShowGroceryAdd((v) => !v)} style={{ background: 'none', border: 'none', fontSize: 14, color: 'var(--blue)', fontWeight: 700, cursor: 'pointer', padding: 0 }}>
                 {showGroceryAdd ? 'Cancel' : '+ Add item'}
               </button>
             </div>
@@ -276,7 +275,7 @@ export default function CardDetailPage() {
                   onChange={(e) => setGroceryItem(e.target.value)}
                   placeholder="Item name..."
                   autoFocus
-                  style={{ flex: 1, border: '1.5px solid #EDE5DA', borderRadius: 10, padding: '10px 12px', fontSize: 14, color: '#2C2C2C', background: '#fff', height: 42, boxSizing: 'border-box', fontFamily: 'inherit' }}
+                  style={{ flex: 1, border: '2px solid var(--border)', borderRadius: 14, padding: '10px 12px', fontSize: 16, color: 'var(--text)', background: 'var(--surface)', height: 44, boxSizing: 'border-box', fontFamily: 'inherit' }}
                 />
                 <button
                   disabled={!groceryItem.trim() || groceryAdding}
@@ -294,20 +293,18 @@ export default function CardDetailPage() {
                       setGroceryAdding(false);
                     }
                   }}
-                  style={{ background: '#5B9BD5', border: 'none', borderRadius: 10, padding: '0 14px', height: 42, color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer', opacity: (!groceryItem.trim() || groceryAdding) ? 0.4 : 1 }}
+                  style={{ background: 'var(--blue)', border: 'none', borderRadius: 50, padding: '0 16px', height: 44, color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer', opacity: (!groceryItem.trim() || groceryAdding) ? 0.4 : 1, fontFamily: 'var(--font-display)', boxShadow: '0 3px 0px #4080B0' }}
                 >
                   Add
                 </button>
               </div>
             )}
-            {groceryConfirm && <p style={{ marginTop: 8, fontSize: 13, color: '#5A9E8A', fontWeight: 600, margin: '8px 0 0' }}>✓ Added to grocery list!</p>}
+            {groceryConfirm && <p style={{ marginTop: 8, fontSize: 13, color: 'var(--green)', fontWeight: 700, margin: '8px 0 0' }}>✓ Added to grocery list!</p>}
           </div>
         )}
 
         <div style={{ height: 40 }} />
       </div>
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
       {/* Snooze confirmation sheet */}
       {showSnoozeSheet && (() => {
@@ -319,7 +316,7 @@ export default function CardDetailPage() {
           <div className="sheet-overlay" onClick={() => setShowSnoozeSheet(false)}>
             <div className="sheet" onClick={(e) => e.stopPropagation()}>
               <div className="sheet-handle" />
-              <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', margin: '0 0 8px' }}>Snooze this task?</p>
+              <p style={{ fontSize: 18, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)', margin: '0 0 8px' }}>Snooze this task?</p>
               <p style={{ fontSize: 14, color: 'var(--muted)', margin: '0 0 20px', lineHeight: 1.5 }}>
                 {snoozeCount >= 2
                   ? 'This has been snoozed a few times — consider tackling it together or reassigning it.'
@@ -343,12 +340,12 @@ export default function CardDetailPage() {
         <div className="sheet-overlay" onClick={() => setShowDeleteSheet(false)}>
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
             <div className="sheet-handle" />
-            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', margin: '0 0 8px' }}>Delete this task?</p>
+            <p style={{ fontSize: 18, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)', margin: '0 0 8px' }}>Delete this task?</p>
             <p style={{ fontSize: 14, color: 'var(--muted)', margin: '0 0 20px' }}>This can't be undone.</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <button
                 onClick={confirmDelete}
-                style={{ width: '100%', background: 'var(--red)', border: 'none', borderRadius: 'var(--radius-btn)', padding: '13px 20px', fontWeight: 600, fontSize: 15, color: '#fff', cursor: 'pointer' }}
+                style={{ width: '100%', background: 'var(--red)', border: 'none', borderRadius: 50, padding: '14px 20px', fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 15, color: '#fff', cursor: 'pointer', boxShadow: '0 4px 0px #B83030' }}
               >
                 Delete
               </button>
@@ -373,9 +370,9 @@ export default function CardDetailPage() {
 
 function FieldRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '13px 16px', borderBottom: last ? 'none' : '1px solid #F5EDE4', gap: 12 }}>
-      <span style={{ fontSize: 14, color: '#8A7F77', fontWeight: 500, flex: 1 }}>{label}</span>
-      <span style={{ fontSize: 14, color: '#2C2C2C', fontWeight: 500, flex: 2, textAlign: 'right' }}>{value}</span>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '13px 16px', borderBottom: last ? 'none' : '1px solid var(--border-soft)', gap: 12 }}>
+      <span style={{ fontSize: 14, color: 'var(--muted)', fontWeight: 600, flex: 1 }}>{label}</span>
+      <span style={{ fontSize: 14, color: 'var(--text)', fontWeight: 600, flex: 2, textAlign: 'right' }}>{value}</span>
     </div>
   );
 }
@@ -384,19 +381,27 @@ function ActionBtn({ label, emoji, onClick, disabled, primary, highlight }: {
   label: string; emoji: string; onClick: () => void;
   disabled?: boolean; primary?: boolean; highlight?: boolean;
 }) {
+  const bgColor = primary ? 'var(--green)' : highlight ? 'var(--primary-light)' : 'var(--surface)';
+  const borderColor = primary ? 'var(--green)' : highlight ? 'var(--primary)' : 'var(--border)';
+  const shadowColor = primary ? '#34A06A' : highlight ? '#C45A30' : 'var(--border)';
+
   return (
     <button
       onClick={onClick}
       disabled={disabled}
       style={{
-        flex: 1, minWidth: '45%', background: primary ? '#D4845A' : highlight ? '#FDF0E8' : '#fff',
-        border: `1.5px solid ${primary ? '#D4845A' : highlight ? '#D4845A' : '#EDE5DA'}`,
-        borderRadius: 14, padding: 14, cursor: 'pointer', opacity: disabled ? 0.4 : 1,
+        flex: 1, minWidth: '45%',
+        background: bgColor,
+        border: `2px solid ${borderColor}`,
+        borderRadius: 20, padding: 14, cursor: 'pointer',
+        opacity: disabled ? 0.4 : 1,
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+        boxShadow: `0 3px 0px ${shadowColor}`,
+        transition: 'transform 0.1s ease, box-shadow 0.1s ease',
       }}
     >
-      <span style={{ fontSize: 22 }}>{emoji}</span>
-      <span style={{ fontSize: 13, fontWeight: 600, color: primary ? '#fff' : '#2C2C2C', textAlign: 'center' }}>{label}</span>
+      <span style={{ fontSize: 28 }}>{emoji}</span>
+      <span style={{ fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 600, color: primary ? '#fff' : 'var(--text)', textAlign: 'center' }}>{label}</span>
     </button>
   );
 }

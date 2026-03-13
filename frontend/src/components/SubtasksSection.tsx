@@ -79,14 +79,14 @@ export function SubtasksSection({ cardId, subtasks, currentUserId, onUpdate }: P
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.8 }}>
+          <span style={{ fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.8 }}>
             Steps
           </span>
           {subtasks.length > 0 && (
             <span style={{
-              background: allDone ? 'var(--teal-light)' : '#F5EDE4',
-              color: allDone ? 'var(--teal)' : 'var(--muted)',
-              fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
+              background: allDone ? 'var(--green-light)' : 'var(--border-soft)',
+              color: allDone ? 'var(--green)' : 'var(--muted)',
+              fontSize: 11, fontWeight: 700, padding: '2px 10px', borderRadius: 50,
             }}>
               {doneCount}/{subtasks.length} done
             </span>
@@ -94,7 +94,7 @@ export function SubtasksSection({ cardId, subtasks, currentUserId, onUpdate }: P
         </div>
         <button
           onClick={() => { setShowAdd((v) => !v); setNewTitle(''); }}
-          style={{ fontSize: 14, color: 'var(--blue)', fontWeight: 600 }}
+          style={{ fontSize: 14, color: 'var(--blue)', fontWeight: 700 }}
         >
           {showAdd ? 'Cancel' : '+ Add step'}
         </button>
@@ -121,7 +121,7 @@ export function SubtasksSection({ cardId, subtasks, currentUserId, onUpdate }: P
           <input
             type="text"
             style={{
-              border: '1.5px solid var(--orange)', borderRadius: 12, padding: 12,
+              border: '2px solid var(--primary)', borderRadius: 14, padding: 12,
               fontSize: 16, color: 'var(--text)', background: 'var(--surface)',
               width: '100%', boxSizing: 'border-box',
             }}
@@ -132,21 +132,25 @@ export function SubtasksSection({ cardId, subtasks, currentUserId, onUpdate }: P
             onKeyDown={(e) => { if (e.key === 'Enter') handleAdd(); }}
           />
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {ASSIGNMENTS.map((a) => (
-              <button
-                key={a.value}
-                onClick={() => setNewAssigned(a.value)}
-                style={{
-                  padding: '6px 12px', borderRadius: 8, fontSize: 13,
-                  fontWeight: newAssigned === a.value ? 600 : 500,
-                  border: `1.5px solid ${newAssigned === a.value ? 'var(--orange)' : 'var(--border)'}`,
-                  background: newAssigned === a.value ? 'var(--orange-light)' : 'var(--surface)',
-                  color: newAssigned === a.value ? 'var(--orange)' : 'var(--muted)',
-                }}
-              >
-                {a.label}
-              </button>
-            ))}
+            {ASSIGNMENTS.map((a) => {
+              const active = newAssigned === a.value;
+              return (
+                <button
+                  key={a.value}
+                  onClick={() => setNewAssigned(a.value)}
+                  style={{
+                    padding: '6px 14px', borderRadius: 50, fontSize: 13,
+                    fontWeight: active ? 700 : 600,
+                    border: `2px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
+                    background: active ? 'var(--primary-light)' : 'var(--surface)',
+                    color: active ? 'var(--primary)' : 'var(--muted)',
+                    transition: 'all 0.2s var(--ease-spring)',
+                  }}
+                >
+                  {a.label}
+                </button>
+              );
+            })}
           </div>
           <button
             onClick={handleAdd}
@@ -181,27 +185,30 @@ function SubtaskRow({ subtask, onStatusTap, onAssigneeChange, onDelete }: {
       <button
         onClick={onStatusTap}
         style={{
-          width: 24, height: 24, borderRadius: 12, flexShrink: 0,
-          border: `2px solid ${isDone ? 'var(--teal)' : isOnIt ? 'var(--orange)' : 'var(--light-muted)'}`,
-          background: isDone ? 'var(--teal)' : isOnIt ? 'var(--orange-light)' : 'transparent',
+          width: 26, height: 26, borderRadius: 13, flexShrink: 0,
+          border: `2px solid ${isDone ? 'var(--green)' : isOnIt ? 'var(--primary)' : 'var(--light-muted)'}`,
+          background: isDone ? 'var(--green)' : isOnIt ? 'var(--primary-light)' : 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          marginTop: 1, transition: 'background 0.2s, border-color 0.2s',
+          marginTop: 1, transition: 'all 0.2s var(--ease-spring)',
         }}
       >
-        {isDone && <span style={{ color: '#fff', fontSize: 13, fontWeight: 700, lineHeight: 1 }}>✓</span>}
-        {isOnIt && <span style={{ width: 8, height: 8, borderRadius: 4, background: 'var(--orange)', display: 'block' }} />}
+        {isDone && <span style={{ color: '#fff', fontSize: 13, fontWeight: 700, lineHeight: 1, animation: 'checkBounce 0.3s var(--ease-spring)' }}>✓</span>}
+        {isOnIt && <span style={{ width: 8, height: 8, borderRadius: 4, background: 'var(--primary)', display: 'block' }} />}
       </button>
 
       {/* Content */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
         <span style={{
           fontSize: 15, color: isDone ? 'var(--light-muted)' : 'var(--text)',
-          fontWeight: 500, textDecoration: isDone ? 'line-through' : 'none', lineHeight: 1.35,
+          fontWeight: 600,
+          textDecoration: isDone ? 'line-through' : 'none',
+          textDecorationStyle: isDone ? 'wavy' as any : undefined,
+          lineHeight: 1.35,
         }}>
           {subtask.title}
         </span>
         {(isOnIt || isDone) && subtask.status_user_id && (
-          <span style={{ fontSize: 12, color: isDone ? 'var(--teal)' : 'var(--orange)', fontWeight: 500 }}>
+          <span style={{ fontSize: 12, color: isDone ? 'var(--green)' : 'var(--primary)', fontWeight: 600 }}>
             {isDone ? `✓ Done by ${actorName}` : `💪 ${actorName} is on it`}
           </span>
         )}
@@ -211,12 +218,12 @@ function SubtaskRow({ subtask, onStatusTap, onAssigneeChange, onDelete }: {
       <button
         onClick={onAssigneeChange}
         style={{
-          background: subtask.assigned_to === 'either' ? 'transparent' : 'var(--orange-light)',
-          border: `1.5px solid ${subtask.assigned_to === 'either' ? 'var(--border)' : 'var(--orange-soft)'}`,
-          color: subtask.assigned_to === 'either' ? 'var(--light-muted)' : 'var(--orange)',
-          fontSize: 11, fontWeight: 600, padding: '2px 7px', borderRadius: 8,
+          background: subtask.assigned_to === 'either' ? 'transparent' : 'var(--primary-light)',
+          border: `2px solid ${subtask.assigned_to === 'either' ? 'var(--border)' : 'var(--primary-soft)'}`,
+          color: subtask.assigned_to === 'either' ? 'var(--light-muted)' : 'var(--primary)',
+          fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 50,
           alignSelf: 'flex-start', marginTop: 3, cursor: 'pointer',
-          transition: 'background 0.15s, border-color 0.15s',
+          transition: 'all 0.2s var(--ease-spring)',
         }}
         title="Tap to change assignee"
       >

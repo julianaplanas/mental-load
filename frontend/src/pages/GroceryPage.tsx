@@ -135,13 +135,13 @@ export default function GroceryPage() {
       {/* Header */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '16px 20px 12px', borderBottom: '1px solid #EDE5DA', flexShrink: 0,
+        padding: '16px 20px 12px', borderBottom: '1px solid var(--border)', flexShrink: 0,
       }}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: '#2C2C2C', margin: 0 }}>Groceries</h1>
+        <h1 style={{ fontSize: 28, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)', margin: 0 }}>Groceries</h1>
         {hasChecked && (
           <button
             onClick={handleClearChecked}
-            style={{ background: '#F5EDE4', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 13, fontWeight: 600, color: '#D4845A', cursor: 'pointer' }}
+            style={{ background: 'var(--primary-light)', border: 'none', borderRadius: 50, padding: '6px 14px', fontSize: 13, fontWeight: 700, color: 'var(--primary)', cursor: 'pointer', fontFamily: 'var(--font-display)' }}
           >
             Clear ✓
           </button>
@@ -152,19 +152,19 @@ export default function GroceryPage() {
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {loading ? (
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
-            <div style={{ width: 32, height: 32, border: '3px solid #EDE5DA', borderTopColor: '#D4845A', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+            <div className="spinner" />
           </div>
         ) : groups.length === 0 && !hasChecked ? (
           <div style={{ textAlign: 'center', paddingTop: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 48 }}>🛒</span>
-            <p style={{ fontSize: 20, fontWeight: 600, color: '#2C2C2C', margin: 0 }}>List is empty</p>
-            <p style={{ fontSize: 14, color: '#8A7F77', margin: 0 }}>Add your first item below.</p>
+            <span style={{ fontSize: 48, animation: 'float 3s ease-in-out infinite' }}>🛒</span>
+            <p style={{ fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--text)', margin: 0 }}>List is empty</p>
+            <p style={{ fontSize: 14, color: 'var(--muted)', margin: 0 }}>Add your first item below.</p>
           </div>
         ) : (
           <div style={{ paddingTop: 8, paddingBottom: 8 }}>
             {groups.map((group) => (
               <div key={group.key} style={{ marginBottom: 4 }}>
-                <p style={{ fontSize: 13, fontWeight: 700, color: '#8A7F77', padding: '10px 20px', textTransform: 'uppercase', letterSpacing: 0.5, margin: 0 }}>
+                <p style={{ fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--muted)', padding: '10px 20px', textTransform: 'uppercase', letterSpacing: 0.5, margin: 0 }}>
                   {group.emoji} {group.label}
                 </p>
                 {group.items.map((item) => (
@@ -174,7 +174,7 @@ export default function GroceryPage() {
             ))}
             {hasChecked && (
               <div style={{ marginBottom: 4 }}>
-                <p style={{ fontSize: 13, fontWeight: 700, color: '#B0A8A0', padding: '10px 20px', textTransform: 'uppercase', letterSpacing: 0.5, margin: 0 }}>
+                <p style={{ fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--light-muted)', padding: '10px 20px', textTransform: 'uppercase', letterSpacing: 0.5, margin: 0 }}>
                   ✓ In the basket
                 </p>
                 {checked.map((item) => (
@@ -187,15 +187,15 @@ export default function GroceryPage() {
       </div>
 
       {/* Add bar */}
-      <div style={{ background: '#fff', borderTop: '1px solid #EDE5DA', flexShrink: 0 }}>
+      <div style={{ background: 'var(--surface)', borderTop: '1px solid var(--border)', flexShrink: 0 }}>
         {showExpanded && (
-          <div style={{ padding: '10px 12px', borderBottom: '1px solid #F0E8DF', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ padding: '10px 12px', borderBottom: '1px solid var(--border-soft)', display: 'flex', flexDirection: 'column', gap: 8 }}>
             <input
               type="text"
               value={newQty}
               onChange={(e) => setNewQty(e.target.value)}
               placeholder="Quantity (e.g. x2)"
-              style={{ border: '1.5px solid #EDE5DA', borderRadius: 10, padding: '8px 12px', fontSize: 14, color: '#2C2C2C', background: '#FDF6EE', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit' }}
+              style={{ border: '2px solid var(--border)', borderRadius: 50, padding: '8px 14px', fontSize: 16, color: 'var(--text)', background: 'var(--bg)', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit' }}
             />
             <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2 }}>
               {CATEGORIES.map((cat) => (
@@ -203,11 +203,12 @@ export default function GroceryPage() {
                   key={cat.key}
                   onClick={() => setNewCat(newCat === cat.key ? null : cat.key)}
                   style={{
-                    padding: '6px 10px', borderRadius: 8, whiteSpace: 'nowrap', cursor: 'pointer',
-                    border: `1.5px solid ${newCat === cat.key ? '#D4845A' : '#EDE5DA'}`,
-                    background: newCat === cat.key ? '#FDF0E8' : '#FDF6EE',
-                    fontSize: 12, fontWeight: newCat === cat.key ? 600 : 500,
-                    color: newCat === cat.key ? '#D4845A' : '#8A7F77',
+                    padding: '6px 12px', borderRadius: 50, whiteSpace: 'nowrap', cursor: 'pointer',
+                    border: `2px solid ${newCat === cat.key ? 'var(--primary)' : 'var(--border)'}`,
+                    background: newCat === cat.key ? 'var(--primary-light)' : 'var(--bg)',
+                    fontSize: 12, fontWeight: newCat === cat.key ? 700 : 600,
+                    color: newCat === cat.key ? 'var(--primary)' : 'var(--muted)',
+                    transition: 'all 0.2s var(--ease-spring)',
                   }}
                 >
                   {cat.emoji} {cat.label}
@@ -216,25 +217,25 @@ export default function GroceryPage() {
             </div>
           </div>
         )}
-        <div style={{ display: 'flex', alignItems: 'center', padding: '10px 12px', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', padding: '10px 12px', gap: 8, paddingBottom: 'calc(10px + env(safe-area-inset-bottom))' }}>
           <input
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Add an item..."
             onKeyDown={(e) => { if (e.key === 'Enter') handleAdd(); }}
-            style={{ flex: 1, border: '1.5px solid #EDE5DA', borderRadius: 12, padding: '10px 14px', fontSize: 15, color: '#2C2C2C', background: '#FDF6EE', height: 44, boxSizing: 'border-box', fontFamily: 'inherit' }}
+            style={{ flex: 1, border: '2px solid var(--border)', borderRadius: 50, padding: '10px 16px', fontSize: 16, color: 'var(--text)', background: 'var(--bg)', height: 44, boxSizing: 'border-box', fontFamily: 'inherit' }}
           />
           <button
             onClick={() => setShowExpanded((v) => !v)}
-            style={{ width: 36, height: 36, borderRadius: 18, background: '#F5EDE4', border: 'none', fontSize: 12, color: '#D4845A', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 36, height: 36, borderRadius: 18, background: 'var(--border-soft)', border: 'none', fontSize: 12, color: 'var(--primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}
           >
             {showExpanded ? '▼' : '▲'}
           </button>
           <button
             onClick={handleAdd}
             disabled={!newName.trim() || adding}
-            style={{ background: '#D4845A', color: '#fff', border: 'none', borderRadius: 12, padding: '0 16px', height: 44, fontSize: 15, fontWeight: 700, cursor: 'pointer', opacity: (!newName.trim() || adding) ? 0.4 : 1 }}
+            style={{ background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 50, padding: '0 18px', height: 44, fontSize: 15, fontWeight: 700, cursor: 'pointer', opacity: (!newName.trim() || adding) ? 0.4 : 1, fontFamily: 'var(--font-display)', boxShadow: '0 3px 0px #C45A30' }}
           >
             Add
           </button>
@@ -243,24 +244,11 @@ export default function GroceryPage() {
 
       {/* Undo toast */}
       {undoItem && (
-        <div style={{
-          position: 'fixed', bottom: 90, left: 20, right: 20,
-          background: '#2C2C2C', borderRadius: 14,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '14px 18px', zIndex: 100,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-        }}>
-          <span style={{ color: '#fff', fontSize: 14, flex: 1 }}>"{undoItem.name}" removed</span>
-          <button
-            onClick={handleUndo}
-            style={{ background: '#D4845A', border: 'none', borderRadius: 6, padding: '4px 10px', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', marginLeft: 12 }}
-          >
-            Undo
-          </button>
+        <div className="toast">
+          <span>"{undoItem.name}" removed</span>
+          <button className="toast-action" onClick={handleUndo}>Undo</button>
         </div>
       )}
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
@@ -269,31 +257,40 @@ function ItemRow({ item, onToggle, onDelete }: { item: GroceryItem; onToggle: (i
   return (
     <div style={{
       display: 'flex', alignItems: 'center', padding: '14px 16px',
-      margin: '0 16px 4px', background: item.is_checked ? '#F8F4F0' : '#fff',
-      borderRadius: 12, border: `1px solid ${item.is_checked ? '#F0E8DF' : '#EDE5DA'}`,
+      margin: '0 16px 4px', background: item.is_checked ? 'var(--surface-warm)' : 'var(--surface)',
+      borderRadius: 16, border: `2px solid ${item.is_checked ? 'var(--border-soft)' : 'var(--border)'}`,
+      transition: 'all 0.2s ease',
     }}>
       <button
         onClick={() => onToggle(item)}
         style={{
-          width: 22, height: 22, borderRadius: 11, flexShrink: 0,
-          border: `2px solid #D4845A`, background: item.is_checked ? '#D4845A' : 'transparent',
+          width: 24, height: 24, borderRadius: 12, flexShrink: 0,
+          border: `2px solid ${item.is_checked ? 'var(--green)' : 'var(--primary)'}`,
+          background: item.is_checked ? 'var(--green)' : 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: 'pointer', marginRight: 14,
+          transition: 'all 0.2s var(--ease-spring)',
         }}
       >
-        {item.is_checked && <span style={{ color: '#fff', fontSize: 13, fontWeight: 700 }}>✓</span>}
+        {item.is_checked && <span style={{ color: '#fff', fontSize: 13, fontWeight: 700, animation: 'checkBounce 0.3s var(--ease-spring)' }}>✓</span>}
       </button>
       <div style={{ flex: 1 }}>
-        <p style={{ fontSize: 16, color: item.is_checked ? '#B0A8A0' : '#2C2C2C', fontWeight: 500, margin: 0, textDecoration: item.is_checked ? 'line-through' : 'none' }}>
+        <p style={{
+          fontSize: 16, color: item.is_checked ? 'var(--light-muted)' : 'var(--text)',
+          fontWeight: 600, margin: 0,
+          textDecoration: item.is_checked ? 'line-through' : 'none',
+          textDecorationStyle: item.is_checked ? 'wavy' as any : undefined,
+          textDecorationColor: item.is_checked ? 'var(--light-muted)' : undefined,
+        }}>
           {item.name}
         </p>
         {item.quantity && (
-          <p style={{ fontSize: 13, color: item.is_checked ? '#C0B5AC' : '#8A7F77', margin: 0 }}>{item.quantity}</p>
+          <p style={{ fontSize: 13, color: item.is_checked ? 'var(--light-muted)' : 'var(--muted)', margin: 0 }}>{item.quantity}</p>
         )}
       </div>
       <button
         onClick={() => onDelete(item)}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, color: '#C0B5AC', padding: 0, lineHeight: 1, marginLeft: 12 }}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, color: 'var(--light-muted)', padding: 0, lineHeight: 1, marginLeft: 12 }}
       >
         ×
       </button>

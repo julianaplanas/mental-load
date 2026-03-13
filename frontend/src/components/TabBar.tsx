@@ -19,7 +19,7 @@ export default function TabBar() {
           onClick={() => navigate(tab.path)}
         >
           <span className="tab-item-icon">{tab.icon}</span>
-          <span>{tab.label}</span>
+          <span style={{ fontFamily: 'var(--font-display)' }}>{tab.label}</span>
         </button>
       ))}
     </nav>

@@ -37,7 +37,7 @@ export function ReactionsSection({ cardId, reactions, currentUserId, onUpdate }:
 
   return (
     <div style={{ marginBottom: 28 }}>
-      <p style={{ fontSize: 13, fontWeight: 700, color: '#8A7F77', textTransform: 'uppercase', letterSpacing: 0.5, margin: '0 0 12px' }}>
+      <p style={{ fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.5, margin: '0 0 12px' }}>
         Reactions
       </p>
 
@@ -50,11 +50,14 @@ export function ReactionsSection({ cardId, reactions, currentUserId, onUpdate }:
               onClick={() => handleEmojiPress(emoji)}
               disabled={loading}
               style={{
-                width: 44, height: 44, borderRadius: 22,
-                background: isSelected ? '#FDF0E8' : '#fff',
-                border: `1.5px solid ${isSelected ? '#D4845A' : '#EDE5DA'}`,
-                fontSize: 22, cursor: 'pointer', display: 'flex',
+                width: 48, height: 48, borderRadius: 16,
+                background: isSelected ? 'var(--primary-light)' : 'var(--surface)',
+                border: `2px solid ${isSelected ? 'var(--primary)' : 'var(--border)'}`,
+                fontSize: 24, cursor: 'pointer', display: 'flex',
                 alignItems: 'center', justifyContent: 'center',
+                boxShadow: isSelected ? '0 3px 0px var(--primary-soft)' : '0 3px 0px var(--border)',
+                transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                transform: isSelected ? 'scale(1.08)' : 'scale(1)',
               }}
             >
               {emoji}
@@ -66,12 +69,12 @@ export function ReactionsSection({ cardId, reactions, currentUserId, onUpdate }:
       {(myReaction || otherReaction) && (
         <div style={{ display: 'flex', gap: 16, marginTop: 10 }}>
           {myReaction && (
-            <span style={{ fontSize: 14, color: '#5C4A38', fontWeight: 500 }}>
+            <span style={{ fontSize: 14, color: 'var(--text-soft)', fontWeight: 600 }}>
               You: {myReaction.emoji}
             </span>
           )}
           {otherReaction && (
-            <span style={{ fontSize: 14, color: '#5C4A38', fontWeight: 500 }}>
+            <span style={{ fontSize: 14, color: 'var(--text-soft)', fontWeight: 600 }}>
               {otherName}: {otherReaction.emoji}
             </span>
           )}
