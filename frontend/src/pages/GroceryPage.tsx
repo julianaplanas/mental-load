@@ -254,9 +254,10 @@ export default function GroceryPage() {
 }
 
 function ItemRow({ item, onToggle, onDelete }: { item: GroceryItem; onToggle: (i: GroceryItem) => void; onDelete: (i: GroceryItem) => void }) {
+  const catInfo = item.category ? getCatInfo(item.category) : null;
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', padding: '14px 16px',
+      display: 'flex', alignItems: 'center', padding: '13px 16px',
       margin: '0 16px 4px', background: item.is_checked ? 'var(--surface-warm)' : 'var(--surface)',
       borderRadius: 16, border: `2px solid ${item.is_checked ? 'var(--border-soft)' : 'var(--border)'}`,
       transition: 'all 0.2s ease',
@@ -274,23 +275,36 @@ function ItemRow({ item, onToggle, onDelete }: { item: GroceryItem; onToggle: (i
       >
         {item.is_checked && <span style={{ color: '#fff', fontSize: 13, fontWeight: 700, animation: 'checkBounce 0.3s var(--ease-spring)' }}>✓</span>}
       </button>
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{
           fontSize: 16, color: item.is_checked ? 'var(--light-muted)' : 'var(--text)',
           fontWeight: 600, margin: 0,
           textDecoration: item.is_checked ? 'line-through' : 'none',
-          textDecorationStyle: item.is_checked ? 'wavy' as any : undefined,
           textDecorationColor: item.is_checked ? 'var(--light-muted)' : undefined,
         }}>
           {item.name}
         </p>
-        {item.quantity && (
-          <p style={{ fontSize: 13, color: item.is_checked ? 'var(--light-muted)' : 'var(--muted)', margin: 0 }}>{item.quantity}</p>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3, flexWrap: 'wrap' }}>
+          {catInfo && (
+            <span style={{
+              fontSize: 11, fontWeight: 700,
+              color: item.is_checked ? 'var(--light-muted)' : 'var(--primary)',
+              background: item.is_checked ? 'var(--border-soft)' : 'var(--primary-light)',
+              padding: '2px 8px', borderRadius: 50,
+            }}>
+              {catInfo.emoji} {catInfo.label}
+            </span>
+          )}
+          {item.quantity && (
+            <span style={{ fontSize: 12, color: item.is_checked ? 'var(--light-muted)' : 'var(--muted)', fontWeight: 500 }}>
+              {item.quantity}
+            </span>
+          )}
+        </div>
       </div>
       <button
         onClick={() => onDelete(item)}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, color: 'var(--light-muted)', padding: 0, lineHeight: 1, marginLeft: 12 }}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, color: 'var(--light-muted)', padding: 0, lineHeight: 1, marginLeft: 12, flexShrink: 0 }}
       >
         ×
       </button>

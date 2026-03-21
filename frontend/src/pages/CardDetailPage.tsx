@@ -99,6 +99,12 @@ export default function CardDetailPage() {
 
   const handleDone = async () => {
     if (!card || !id) return;
+    const total = card.subtask_count ?? 0;
+    const done = card.subtask_done_count ?? 0;
+    if (total > 0 && done < total) {
+      showToast(`⚠️ Complete all steps first — ${done}/${total} done`);
+      return;
+    }
     setActionLoading(true);
     try {
       await updateCard(card.id, { status: 'done', current_user_id: userId });
