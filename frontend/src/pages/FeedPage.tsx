@@ -5,20 +5,25 @@ import { useAuth } from '@/hooks/useAuth';
 import { requestAndRegister, notificationsSupported, notificationPermission } from '@/lib/notifications';
 import CardItem from '@/components/CardItem';
 
-function todayLabel(): string {
+function dateLabel(): string {
   return new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-  });
+    weekday: 'long', day: 'numeric', month: 'long',
+  }).toUpperCase();
 }
 
-function greeting(userId: string | null): string {
+function greetingLine(userId: string | null): string {
   const name = userId === 'juli' ? 'Juli' : userId === 'gino' ? 'Gino' : '';
   const h = new Date().getHours();
-  if (h < 12) return `Good morning${name ? `, ${name}` : ''} ☀️`;
-  if (h < 18) return `Hey${name ? ` ${name}` : ''} 👋`;
-  return `Good evening${name ? `, ${name}` : ''} 🌙`;
+  if (h < 12) return `Good morning, ${name}`;
+  if (h < 18) return `Hey, ${name}`;
+  return `Good evening, ${name}`;
+}
+
+function greetingEmoji(userId: string | null): string {
+  const h = new Date().getHours();
+  if (userId === 'juli') return h < 18 ? '🌸' : '🌙';
+  if (userId === 'gino') return h < 18 ? '🌿' : '🌙';
+  return '✨';
 }
 
 export default function FeedPage() {
@@ -38,40 +43,39 @@ export default function FeedPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
-      <div style={{
-        padding: '20px 20px 16px',
-        flexShrink: 0,
-        background: 'var(--bg)',
-      }}>
+      <div style={{ padding: '24px 20px 16px', flexShrink: 0 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
+          <div style={{ flex: 1 }}>
             <p style={{
-              fontSize: 13,
-              fontWeight: 600,
-              color: 'var(--muted)',
-              margin: '0 0 2px',
-              letterSpacing: 0.3,
-              textTransform: 'uppercase',
+              fontSize: 11,
+              fontWeight: 700,
+              color: 'var(--light-muted)',
+              letterSpacing: 1.2,
+              margin: '0 0 4px',
+              fontFamily: 'var(--font-body)',
             }}>
-              {todayLabel()}
+              {dateLabel()}
             </p>
             <h1 style={{
-              fontSize: 26,
               fontFamily: 'var(--font-display)',
-              fontWeight: 700,
+              fontStyle: 'italic',
+              fontWeight: 600,
+              fontSize: 30,
               color: 'var(--text)',
               margin: 0,
               lineHeight: 1.1,
+              letterSpacing: -0.5,
             }}>
-              {greeting(userId)}
+              {greetingLine(userId)}{' '}
+              <span style={{ fontStyle: 'normal' }}>{greetingEmoji(userId)}</span>
             </h1>
           </div>
+
           <button
             onClick={() => navigate('/card/new')}
             style={{
-              width: 46,
-              height: 46,
-              borderRadius: 23,
+              width: 48, height: 48,
+              borderRadius: 24,
               background: 'var(--primary)',
               border: 'none',
               color: '#fff',
@@ -82,23 +86,14 @@ export default function FeedPage() {
               justifyContent: 'center',
               lineHeight: 1,
               boxShadow: 'var(--shadow-btn)',
-              fontFamily: 'var(--font-display)',
               fontWeight: 700,
               flexShrink: 0,
-              transition: 'transform 0.1s ease, box-shadow 0.1s ease',
+              marginLeft: 12,
+              transition: 'transform 0.1s ease',
             }}
-            onMouseDown={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = 'translateY(2px)';
-              (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 0px rgba(90,72,200,0.35)';
-            }}
-            onMouseUp={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = '';
-              (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-btn)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = '';
-              (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-btn)';
-            }}
+            onMouseDown={(e) => { (e.currentTarget as HTMLElement).style.transform = 'scale(0.92)'; }}
+            onMouseUp={(e) => { (e.currentTarget as HTMLElement).style.transform = ''; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = ''; }}
           >
             +
           </button>
@@ -107,18 +102,20 @@ export default function FeedPage() {
         {/* Urgent banner */}
         {urgentCount > 0 && !loading && (
           <div style={{
-            marginTop: 14,
-            background: 'linear-gradient(135deg, #F06565, #E8399A)',
-            borderRadius: 16,
-            padding: '12px 16px',
+            marginTop: 16,
+            background: 'linear-gradient(135deg, #E07070, #C85080)',
+            borderRadius: 18,
+            padding: '13px 18px',
             display: 'flex',
             alignItems: 'center',
             gap: 10,
           }}>
-            <span style={{ fontSize: 20 }}>🔥</span>
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>
-              {urgentCount} urgent task{urgentCount > 1 ? 's' : ''} need attention
-            </span>
+            <span style={{ fontSize: 18 }}>🔥</span>
+            <div>
+              <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0 }}>
+                {urgentCount} urgent task{urgentCount > 1 ? 's' : ''} need attention
+              </p>
+            </div>
           </div>
         )}
       </div>
@@ -127,15 +124,17 @@ export default function FeedPage() {
       {showNotifPrompt && (
         <div style={{
           background: 'var(--primary-light)',
-          borderBottom: '1px solid var(--border)',
-          padding: '10px 16px',
+          padding: '10px 18px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 10,
           flexShrink: 0,
+          marginBottom: 2,
         }}>
-          <span style={{ fontSize: 13, color: 'var(--text-soft)' }}>🔔 Enable notifications to stay in sync</span>
+          <span style={{ fontSize: 13, color: 'var(--text-soft)', fontStyle: 'italic' }}>
+            🔔 Enable notifications to stay in sync
+          </span>
           <div style={{ display: 'flex', gap: 8 }}>
             <button
               onClick={handleEnableNotifications}
@@ -148,22 +147,13 @@ export default function FeedPage() {
                 fontWeight: 700,
                 color: '#fff',
                 cursor: 'pointer',
-                fontFamily: 'var(--font-display)',
               }}
             >
               Enable
             </button>
             <button
               onClick={() => setNotifDismissed(true)}
-              style={{
-                background: 'none',
-                border: 'none',
-                fontSize: 18,
-                color: 'var(--light-muted)',
-                cursor: 'pointer',
-                padding: 0,
-                lineHeight: 1,
-              }}
+              style={{ fontSize: 18, color: 'var(--light-muted)', padding: 0, lineHeight: 1 }}
             >
               ×
             </button>
@@ -172,9 +162,9 @@ export default function FeedPage() {
       )}
 
       {/* Content */}
-      <div style={{ flex: 1, overflowY: 'auto', paddingTop: 4 }}>
+      <div style={{ flex: 1, overflowY: 'auto' }}>
         {refreshing && (
-          <div style={{ textAlign: 'center', padding: '8px 0', fontSize: 12, color: 'var(--light-muted)' }}>
+          <div style={{ textAlign: 'center', padding: '6px 0', fontSize: 12, color: 'var(--light-muted)', fontStyle: 'italic' }}>
             Refreshing...
           </div>
         )}
@@ -191,16 +181,23 @@ export default function FeedPage() {
           </div>
         ) : cards.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 56, animation: 'float 3s ease-in-out infinite' }}>🎉</span>
-            <p style={{ fontSize: 22, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)', margin: 0 }}>
+            <span style={{ fontSize: 52, animation: 'float 3s ease-in-out infinite' }}>🎉</span>
+            <p style={{
+              fontFamily: 'var(--font-display)',
+              fontStyle: 'italic',
+              fontSize: 26,
+              fontWeight: 600,
+              color: 'var(--text)',
+              margin: 0,
+            }}>
               All caught up!
             </p>
-            <p style={{ fontSize: 14, color: 'var(--muted)', margin: 0 }}>
+            <p style={{ fontSize: 14, color: 'var(--muted)', margin: 0, fontStyle: 'italic' }}>
               No pending tasks. Add one with the + button.
             </p>
           </div>
         ) : (
-          <div style={{ paddingBottom: 8 }}>
+          <div style={{ paddingBottom: 12 }}>
             {cards.map((card) => (
               <CardItem key={card.id} card={card} />
             ))}

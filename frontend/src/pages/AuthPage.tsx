@@ -6,23 +6,20 @@ const USERS: {
   emoji: string;
   bg: string;
   shadow: string;
-  label: string;
 }[] = [
   {
     id: 'juli',
     name: 'Juli',
     emoji: '🌸',
-    bg: 'linear-gradient(135deg, #E8709A 0%, #C850A0 100%)',
-    shadow: '#A83678',
-    label: "I'm Juli",
+    bg: 'linear-gradient(135deg, #D4849A 0%, #C06080 100%)',
+    shadow: '#A04060',
   },
   {
     id: 'gino',
     name: 'Gino',
     emoji: '🌿',
-    bg: 'linear-gradient(135deg, #3EC8B8 0%, #2B9E90 100%)',
-    shadow: '#1B7A6E',
-    label: "I'm Gino",
+    bg: 'linear-gradient(135deg, #82B09A 0%, #5A9080 100%)',
+    shadow: '#3A7060',
   },
 ];
 
@@ -34,64 +31,88 @@ export default function AuthPage({ onSignIn }: Props) {
   return (
     <div style={{
       minHeight: '100dvh',
-      background: '#FFFFFF',
+      background: 'var(--bg)',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'space-between',
       boxSizing: 'border-box',
+      overflow: 'hidden',
     }}>
 
-      {/* Top decorative band */}
+      {/* Hero */}
       <div style={{
-        background: 'linear-gradient(135deg, #7B68EE 0%, #9B72CF 100%)',
-        padding: '60px 32px 48px',
+        background: 'linear-gradient(160deg, #8B8FD4 0%, #A882C8 55%, #D4849A 100%)',
+        padding: '72px 36px 56px',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        gap: 8,
+        alignItems: 'flex-start',
+        gap: 6,
+        position: 'relative',
+        overflow: 'hidden',
       }}>
+        {/* Decorative blob */}
+        <div style={{
+          position: 'absolute', top: -40, right: -40,
+          width: 180, height: 180,
+          background: 'rgba(255,255,255,0.10)',
+          borderRadius: '60% 40% 70% 30% / 50% 60% 40% 50%',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: -20, right: 40,
+          width: 100, height: 100,
+          background: 'rgba(255,255,255,0.07)',
+          borderRadius: '40% 60% 30% 70% / 60% 40% 70% 30%',
+        }} />
+
         <p style={{
-          fontSize: 72,
+          fontSize: 76,
           fontFamily: 'var(--font-display)',
           fontWeight: 700,
+          fontStyle: 'italic',
           color: '#fff',
           letterSpacing: -3,
           margin: 0,
-          lineHeight: 1,
+          lineHeight: 0.9,
           animation: 'bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          position: 'relative',
         }}>
           noi
         </p>
         <p style={{
-          fontSize: 15,
+          fontSize: 16,
           fontFamily: 'var(--font-body)',
-          color: 'rgba(255,255,255,0.75)',
+          fontStyle: 'italic',
+          color: 'rgba(255,255,255,0.80)',
           margin: 0,
-          letterSpacing: 0.5,
           animation: 'fadeIn 0.5s ease 0.2s both',
+          position: 'relative',
+          fontWeight: 300,
         }}>
           our shared mental load
         </p>
       </div>
 
-      {/* User selection */}
+      {/* Selector */}
       <div style={{
-        padding: '0 28px',
+        flex: 1,
+        padding: '40px 28px 48px',
         display: 'flex',
         flexDirection: 'column',
-        gap: 16,
-        animation: 'fadeIn 0.5s ease 0.25s both',
+        gap: 14,
+        justifyContent: 'center',
       }}>
         <p style={{
-          fontSize: 20,
           fontFamily: 'var(--font-display)',
+          fontSize: 24,
           fontWeight: 600,
-          color: '#1A1826',
-          textAlign: 'center',
-          margin: '0 0 4px',
+          fontStyle: 'italic',
+          color: 'var(--text)',
+          margin: '0 0 10px',
+          animation: 'fadeIn 0.5s ease 0.25s both',
+          lineHeight: 1.2,
         }}>
-          Who are you?
+          Who's here?
         </p>
+
         {USERS.map((user, i) => (
           <button
             key={user.id}
@@ -105,49 +126,52 @@ export default function AuthPage({ onSignIn }: Props) {
               border: 'none',
               background: user.bg,
               cursor: 'pointer',
-              boxShadow: `0 5px 0px ${user.shadow}`,
+              boxShadow: `0 6px 0px ${user.shadow}`,
               transition: 'transform 0.1s ease, box-shadow 0.1s ease',
               animation: `bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${0.35 + i * 0.12}s both`,
             }}
             onMouseDown={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = 'translateY(4px)';
+              (e.currentTarget as HTMLElement).style.transform = 'translateY(5px)';
               (e.currentTarget as HTMLElement).style.boxShadow = `0 1px 0px ${user.shadow}`;
             }}
             onMouseUp={(e) => {
               (e.currentTarget as HTMLElement).style.transform = '';
-              (e.currentTarget as HTMLElement).style.boxShadow = `0 5px 0px ${user.shadow}`;
+              (e.currentTarget as HTMLElement).style.boxShadow = `0 6px 0px ${user.shadow}`;
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLElement).style.transform = '';
-              (e.currentTarget as HTMLElement).style.boxShadow = `0 5px 0px ${user.shadow}`;
+              (e.currentTarget as HTMLElement).style.boxShadow = `0 6px 0px ${user.shadow}`;
             }}
           >
             <span style={{ fontSize: 36 }}>{user.emoji}</span>
-            <span style={{
-              fontSize: 24,
-              fontFamily: 'var(--font-display)',
-              fontWeight: 700,
-              color: '#fff',
-              letterSpacing: 0.2,
-            }}>
-              {user.label}
-            </span>
+            <div>
+              <p style={{
+                fontSize: 22,
+                fontFamily: 'var(--font-display)',
+                fontWeight: 600,
+                fontStyle: 'italic',
+                color: '#fff',
+                margin: 0,
+                lineHeight: 1,
+              }}>
+                I'm {user.name}
+              </p>
+            </div>
           </button>
         ))}
-      </div>
 
-      {/* Footer */}
-      <p style={{
-        textAlign: 'center',
-        fontSize: 13,
-        color: '#C4BFDA',
-        lineHeight: 1.6,
-        margin: '0 0 40px',
-        padding: '0 32px',
-        animation: 'fadeIn 0.5s ease 0.6s both',
-      }}>
-        Your choice is saved on this device.<br />You won't be asked again.
-      </p>
+        <p style={{
+          textAlign: 'center',
+          fontSize: 12,
+          color: 'var(--light-muted)',
+          lineHeight: 1.7,
+          margin: '16px 0 0',
+          fontStyle: 'italic',
+          animation: 'fadeIn 0.5s ease 0.6s both',
+        }}>
+          Saved on this device — you won't be asked again.
+        </p>
+      </div>
     </div>
   );
 }

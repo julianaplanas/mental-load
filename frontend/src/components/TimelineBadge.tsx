@@ -28,10 +28,10 @@ export default function TimelineBadge({ card, small }: Props) {
   const overdue = isOverdue(card);
 
   let label: string, bg: string;
-  if (overdue)                           { label = 'Overdue';    bg = '#F06565'; }
-  else if (card.timeline === 'today')    { label = 'Today';      bg = '#F06565'; }
-  else if (card.timeline === 'this_week'){ label = 'This week';  bg = '#7B68EE'; }
-  else if (card.timeline === 'this_month'){ label = 'This month'; bg = '#3EC8B8'; }
+  if (overdue)                           { label = 'Overdue';    bg = '#E07070'; }
+  else if (card.timeline === 'today')    { label = 'Today';      bg = '#E07070'; }
+  else if (card.timeline === 'this_week'){ label = 'This week';  bg = '#8B8FD4'; }
+  else if (card.timeline === 'this_month'){ label = 'This month'; bg = '#82B09A'; }
   else if (card.timeline === 'custom' && card.custom_date) {
     const d = parseLocalDate(card.custom_date);
     label = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });

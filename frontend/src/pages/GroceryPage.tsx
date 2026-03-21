@@ -188,54 +188,60 @@ export default function GroceryPage() {
 
       {/* Add bar */}
       <div style={{ background: 'var(--surface)', borderTop: '1px solid var(--border)', flexShrink: 0 }}>
+        {/* Category chips — always visible */}
+        <div style={{ padding: '10px 12px 6px', display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 8 }}>
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat.key}
+              onClick={() => setNewCat(newCat === cat.key ? null : cat.key)}
+              style={{
+                padding: '6px 13px', borderRadius: 50, whiteSpace: 'nowrap', cursor: 'pointer',
+                border: `1.5px solid ${newCat === cat.key ? 'var(--primary)' : 'var(--border)'}`,
+                background: newCat === cat.key ? 'var(--primary-light)' : 'transparent',
+                fontSize: 12, fontWeight: newCat === cat.key ? 700 : 500,
+                color: newCat === cat.key ? 'var(--primary)' : 'var(--muted)',
+                transition: 'all 0.2s var(--ease-spring)',
+                flexShrink: 0,
+              }}
+            >
+              {cat.emoji} {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Quantity field — still toggled */}
         {showExpanded && (
-          <div style={{ padding: '10px 12px', borderBottom: '1px solid var(--border-soft)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ padding: '0 12px 8px' }}>
             <input
               type="text"
               value={newQty}
               onChange={(e) => setNewQty(e.target.value)}
               placeholder="Quantity (e.g. x2)"
-              style={{ border: '2px solid var(--border)', borderRadius: 50, padding: '8px 14px', fontSize: 16, color: 'var(--text)', background: 'var(--bg)', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit' }}
+              style={{ border: '1.5px solid var(--border)', borderRadius: 50, padding: '8px 14px', fontSize: 15, color: 'var(--text)', background: 'var(--bg)', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit' }}
             />
-            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2 }}>
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.key}
-                  onClick={() => setNewCat(newCat === cat.key ? null : cat.key)}
-                  style={{
-                    padding: '6px 12px', borderRadius: 50, whiteSpace: 'nowrap', cursor: 'pointer',
-                    border: `2px solid ${newCat === cat.key ? 'var(--primary)' : 'var(--border)'}`,
-                    background: newCat === cat.key ? 'var(--primary-light)' : 'var(--bg)',
-                    fontSize: 12, fontWeight: newCat === cat.key ? 700 : 600,
-                    color: newCat === cat.key ? 'var(--primary)' : 'var(--muted)',
-                    transition: 'all 0.2s var(--ease-spring)',
-                  }}
-                >
-                  {cat.emoji} {cat.label}
-                </button>
-              ))}
-            </div>
           </div>
         )}
-        <div style={{ display: 'flex', alignItems: 'center', padding: '10px 12px', gap: 8, paddingBottom: 'calc(10px + env(safe-area-inset-bottom))' }}>
+
+        {/* Input row */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '6px 12px 10px', gap: 8, paddingBottom: 'calc(10px + env(safe-area-inset-bottom))' }}>
           <input
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Add an item..."
             onKeyDown={(e) => { if (e.key === 'Enter') handleAdd(); }}
-            style={{ flex: 1, border: '2px solid var(--border)', borderRadius: 50, padding: '10px 16px', fontSize: 16, color: 'var(--text)', background: 'var(--bg)', height: 44, boxSizing: 'border-box', fontFamily: 'inherit' }}
+            style={{ flex: 1, border: '1.5px solid var(--border)', borderRadius: 50, padding: '10px 16px', fontSize: 16, color: 'var(--text)', background: 'var(--bg)', height: 44, boxSizing: 'border-box', fontFamily: 'inherit' }}
           />
           <button
             onClick={() => setShowExpanded((v) => !v)}
-            style={{ width: 36, height: 36, borderRadius: 18, background: 'var(--border-soft)', border: 'none', fontSize: 12, color: 'var(--primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}
+            style={{ width: 36, height: 36, borderRadius: 18, background: 'var(--primary-light)', border: 'none', fontSize: 13, color: 'var(--primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}
           >
             {showExpanded ? '▼' : '▲'}
           </button>
           <button
             onClick={handleAdd}
             disabled={!newName.trim() || adding}
-            style={{ background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 50, padding: '0 18px', height: 44, fontSize: 15, fontWeight: 700, cursor: 'pointer', opacity: (!newName.trim() || adding) ? 0.4 : 1, fontFamily: 'var(--font-display)', boxShadow: '0 3px 0px #C45A30' }}
+            style={{ background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 50, padding: '0 18px', height: 44, fontSize: 15, fontWeight: 700, cursor: 'pointer', opacity: (!newName.trim() || adding) ? 0.4 : 1, fontFamily: 'var(--font-body)', boxShadow: 'var(--shadow-btn)' }}
           >
             Add
           </button>
@@ -254,53 +260,46 @@ export default function GroceryPage() {
 }
 
 function ItemRow({ item, onToggle, onDelete }: { item: GroceryItem; onToggle: (i: GroceryItem) => void; onDelete: (i: GroceryItem) => void }) {
-  const catInfo = item.category ? getCatInfo(item.category) : null;
   return (
     <div style={{
       display: 'flex', alignItems: 'center', padding: '13px 16px',
-      margin: '0 16px 4px', background: item.is_checked ? 'var(--surface-warm)' : 'var(--surface)',
-      borderRadius: 16, border: `2px solid ${item.is_checked ? 'var(--border-soft)' : 'var(--border)'}`,
+      margin: '0 16px 4px',
+      background: item.is_checked ? 'var(--surface-warm)' : 'var(--surface)',
+      borderRadius: 18,
+      boxShadow: item.is_checked ? 'none' : 'var(--shadow-card)',
       transition: 'all 0.2s ease',
+      opacity: item.is_checked ? 0.65 : 1,
     }}>
       <button
         onClick={() => onToggle(item)}
         style={{
-          width: 24, height: 24, borderRadius: 12, flexShrink: 0,
-          border: `2px solid ${item.is_checked ? 'var(--green)' : 'var(--primary)'}`,
-          background: item.is_checked ? 'var(--green)' : 'transparent',
+          width: 26, height: 26, borderRadius: 13, flexShrink: 0,
+          border: `2px solid ${item.is_checked ? 'var(--sage)' : 'var(--primary)'}`,
+          background: item.is_checked ? 'var(--sage)' : 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: 'pointer', marginRight: 14,
           transition: 'all 0.2s var(--ease-spring)',
         }}
       >
-        {item.is_checked && <span style={{ color: '#fff', fontSize: 13, fontWeight: 700, animation: 'checkBounce 0.3s var(--ease-spring)' }}>✓</span>}
+        {item.is_checked && (
+          <span style={{ color: '#fff', fontSize: 13, fontWeight: 700, animation: 'checkBounce 0.3s var(--ease-spring)' }}>✓</span>
+        )}
       </button>
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{
-          fontSize: 16, color: item.is_checked ? 'var(--light-muted)' : 'var(--text)',
-          fontWeight: 600, margin: 0,
+          fontSize: 16, fontWeight: 600,
+          color: item.is_checked ? 'var(--muted)' : 'var(--text)',
+          margin: 0,
           textDecoration: item.is_checked ? 'line-through' : 'none',
-          textDecorationColor: item.is_checked ? 'var(--light-muted)' : undefined,
+          textDecorationColor: 'var(--light-muted)',
         }}>
           {item.name}
         </p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3, flexWrap: 'wrap' }}>
-          {catInfo && (
-            <span style={{
-              fontSize: 11, fontWeight: 700,
-              color: item.is_checked ? 'var(--light-muted)' : 'var(--primary)',
-              background: item.is_checked ? 'var(--border-soft)' : 'var(--primary-light)',
-              padding: '2px 8px', borderRadius: 50,
-            }}>
-              {catInfo.emoji} {catInfo.label}
-            </span>
-          )}
-          {item.quantity && (
-            <span style={{ fontSize: 12, color: item.is_checked ? 'var(--light-muted)' : 'var(--muted)', fontWeight: 500 }}>
-              {item.quantity}
-            </span>
-          )}
-        </div>
+        {item.quantity && (
+          <p style={{ fontSize: 12, color: 'var(--muted)', margin: '2px 0 0', fontStyle: 'italic' }}>
+            {item.quantity}
+          </p>
+        )}
       </div>
       <button
         onClick={() => onDelete(item)}
