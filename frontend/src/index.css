@@ -1,45 +1,45 @@
 :root {
   /* ─── Colors ──────────────────────────────────────────────────────── */
-  --bg: #FFF8F0;
-  --primary: #E8734A;
-  --primary-light: #FFF0EB;
-  --primary-soft: #F8D4C5;
-  --juli: #E06B8F;
-  --juli-light: #FFF0F4;
-  --gino: #3EB5A0;
-  --gino-light: #E4F7F3;
+  --bg: #F8F7FF;
+  --primary: #7B68EE;
+  --primary-light: #EEEAFF;
+  --primary-soft: #C9C0F8;
+  --juli: #E8709A;
+  --juli-light: #FFEDF4;
+  --gino: #3EC8B8;
+  --gino-light: #E0F9F5;
   --accent: #9B72CF;
   --accent-light: #F3EDFA;
-  --green: #4CC68E;
-  --green-light: #E6F9F0;
-  --yellow: #F5C842;
-  --yellow-light: #FFF8E1;
-  --teal: #3EB5A0;
-  --teal-light: #E4F7F3;
-  --blue: #5B9BD5;
-  --blue-light: #EBF3FB;
-  --red: #E85555;
-  --red-light: #FDECEC;
-  --border: #EDE5DA;
-  --border-soft: #F5EDE4;
-  --text: #2A2438;
-  --text-soft: #5C4A38;
-  --muted: #8A7F77;
-  --light-muted: #C0B5AC;
+  --green: #3EC8B8;
+  --green-light: #E0F9F5;
+  --yellow: #F5A064;
+  --yellow-light: #FFF0E5;
+  --teal: #3EC8B8;
+  --teal-light: #E0F9F5;
+  --blue: #7B68EE;
+  --blue-light: #EEEAFF;
+  --red: #F06565;
+  --red-light: #FFECEC;
+  --border: #E8E5FF;
+  --border-soft: #F0EEFF;
+  --text: #1A1826;
+  --text-soft: #6B6585;
+  --muted: #9B96B0;
+  --light-muted: #C4BFDA;
   --surface: #FFFFFF;
-  --surface-warm: #FDF9F5;
+  --surface-warm: #F5F3FF;
 
   /* ─── Layout ──────────────────────────────────────────────────────── */
-  --tab-h: 64px;
-  --radius-card: 24px;
+  --tab-h: 72px;
+  --radius-card: 20px;
   --radius-btn: 50px;
-  --radius-sm: 12px;
+  --radius-sm: 14px;
 
   /* ─── Shadows ─────────────────────────────────────────────────────── */
-  --shadow-card: 0 2px 12px rgba(42,36,56,0.07), 0 1px 3px rgba(42,36,56,0.04);
-  --shadow-card-hover: 0 6px 20px rgba(42,36,56,0.1), 0 2px 6px rgba(42,36,56,0.05);
-  --shadow-btn: 0 4px 0px rgba(0,0,0,0.12);
-  --shadow-tab: 0 -4px 24px rgba(42,36,56,0.08), 0 -1px 6px rgba(42,36,56,0.04);
+  --shadow-card: 0 2px 8px rgba(123,104,238,0.08), 0 1px 2px rgba(26,24,38,0.04);
+  --shadow-card-hover: 0 8px 24px rgba(123,104,238,0.14), 0 2px 6px rgba(26,24,38,0.06);
+  --shadow-btn: 0 4px 0px rgba(90,72,200,0.35);
+  --shadow-tab: 0 -2px 20px rgba(123,104,238,0.1), 0 -1px 4px rgba(26,24,38,0.04);
 
   /* ─── Fonts ───────────────────────────────────────────────────────── */
   --font-display: 'Fredoka', 'Nunito', sans-serif;
@@ -86,10 +86,10 @@ button:active { transform: scale(0.95); }
 
 input, textarea, select {
   font-family: inherit;
-  font-size: 16px; /* prevents iOS auto-zoom — never go below 16px */
+  font-size: 16px;
   -webkit-appearance: none;
   outline: none;
-  border-radius: 0; /* prevent iOS rounding override */
+  border-radius: 0;
 }
 
 a { text-decoration: none; color: inherit; }
@@ -109,7 +109,7 @@ a { text-decoration: none; color: inherit; }
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-  padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom) + 8px);
+  padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom) + 12px);
 }
 
 .page-scroll-notab {
@@ -119,19 +119,17 @@ a { text-decoration: none; color: inherit; }
   overscroll-behavior-y: contain;
 }
 
-/* ─── Tab bar — Floating Pill ────────────────────────────────────── */
+/* ─── Tab bar ────────────────────────────────────────────────────── */
 
 .tab-bar {
   display: flex;
   background: var(--surface);
-  border-radius: 50px;
-  margin: 0 16px 8px;
-  margin-bottom: calc(8px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
   height: var(--tab-h);
-  padding: 6px;
+  padding: 0 8px;
+  padding-bottom: env(safe-area-inset-bottom);
   flex-shrink: 0;
-  box-shadow: var(--shadow-tab);
-  gap: 4px;
+  gap: 0;
 }
 
 .tab-item {
@@ -140,22 +138,46 @@ a { text-decoration: none; color: inherit; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 3px;
   color: var(--light-muted);
   font-size: 11px;
-  font-weight: 600;
-  transition: all 0.25s var(--ease-spring);
-  letter-spacing: 0.2px;
-  border-radius: 50px;
+  font-weight: 700;
+  transition: all 0.2s var(--ease-out);
+  letter-spacing: 0.3px;
+  border-radius: 0;
   position: relative;
+  padding-top: 8px;
+}
+
+.tab-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: transparent;
+  transition: background 0.2s ease;
 }
 
 .tab-item.active {
   color: var(--primary);
-  background: var(--primary-light);
-  transform: scale(1.05);
 }
-.tab-item-icon { font-size: 22px; line-height: 1; }
+
+.tab-item.active::before {
+  background: var(--primary);
+}
+
+.tab-item-icon {
+  font-size: 22px;
+  line-height: 1;
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.tab-item.active .tab-item-icon {
+  transform: scale(1.15);
+}
 
 /* ─── Nav bar ─────────────────────────────────────────────────────── */
 
@@ -172,13 +194,13 @@ a { text-decoration: none; color: inherit; }
 
 .nav-title { font-family: var(--font-display); font-size: 18px; font-weight: 600; color: var(--text); }
 .nav-back { font-size: 17px; color: var(--primary); font-weight: 600; }
-.nav-action { font-size: 15px; color: var(--blue); font-weight: 600; }
+.nav-action { font-size: 15px; color: var(--primary); font-weight: 600; }
 .nav-delete { font-size: 15px; color: var(--red); font-weight: 600; }
 
 /* ─── Offline banner ─────────────────────────────────────────────── */
 
 .offline-banner {
-  background: var(--muted);
+  background: var(--primary);
   color: #fff;
   text-align: center;
   font-size: 12px;
@@ -193,22 +215,20 @@ a { text-decoration: none; color: inherit; }
 .card {
   background: var(--surface);
   border-radius: var(--radius-card);
-  padding: 15px 16px;
+  padding: 18px 18px 14px;
   margin: 6px 14px;
-  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s ease;
-  border: 2px solid var(--border-soft);
-  animation: slideInUp 0.35s var(--ease-out) both;
+  transition: transform 0.15s var(--ease-spring);
+  animation: slideInUp 0.3s var(--ease-out) both;
+  border: none;
 }
 
 .card:active {
-  transform: scale(0.97) rotate(-0.5deg);
-  box-shadow: 0 1px 6px rgba(42,36,56,0.06);
+  transform: scale(0.97);
 }
 
 /* Staggered card entrance */
@@ -223,27 +243,27 @@ a { text-decoration: none; color: inherit; }
 .card:nth-child(9) { animation-delay: 0.2s; }
 .card:nth-child(10) { animation-delay: 0.22s; }
 
-/* ─── Buttons — 3D Stamp ────────────────────────────────────────── */
+/* ─── Buttons ────────────────────────────────────────────────────── */
 
 .btn-primary {
   background: var(--primary);
   color: #fff;
   border-radius: var(--radius-btn);
-  padding: 14px 24px;
+  padding: 14px 28px;
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 15px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  box-shadow: 0 4px 0px #C45A30;
   letter-spacing: 0.2px;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform 0.1s ease, opacity 0.1s ease;
+  box-shadow: var(--shadow-btn);
 }
 .btn-primary:active {
   transform: translateY(2px);
-  box-shadow: 0 2px 0px #C45A30;
+  box-shadow: 0 2px 0px rgba(90,72,200,0.35);
 }
 
 .btn-secondary {
@@ -254,12 +274,11 @@ a { text-decoration: none; color: inherit; }
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 14px;
-  box-shadow: 0 3px 0px var(--border);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  color: var(--text-soft);
+  transition: transform 0.1s ease;
 }
 .btn-secondary:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0px var(--border);
+  transform: scale(0.97);
 }
 
 /* ─── Badge / Pill ───────────────────────────────────────────────── */
@@ -278,11 +297,11 @@ a { text-decoration: none; color: inherit; }
 
 .section-label {
   font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 1px;
   margin-bottom: 10px;
 }
 
@@ -314,10 +333,10 @@ a { text-decoration: none; color: inherit; }
 }
 .field-textarea:focus { border-color: var(--primary); }
 
-/* ─── Segmented chip — Pill ──────────────────────────────────────── */
+/* ─── Segmented chip ─────────────────────────────────────────────── */
 
 .seg-chip {
-  padding: 9px 16px;
+  padding: 9px 18px;
   border-radius: 50px;
   border: 2px solid var(--border);
   background: var(--surface);
@@ -445,7 +464,7 @@ a { text-decoration: none; color: inherit; }
 @keyframes slideInUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
