@@ -97,7 +97,7 @@ export default function RootLayout() {
 
 const styles = StyleSheet.create({
   offlineBanner: {
-    backgroundColor: '#8A7F77',
+    backgroundColor: '#7C6FCD',
     paddingVertical: 7,
     paddingHorizontal: 16,
     alignItems: 'center',

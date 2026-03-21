@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#8A7F77',
+    color: '#9B96B0',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 12,
@@ -91,13 +91,13 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     backgroundColor: '#fff',
     borderWidth: 1.5,
-    borderColor: '#EDE5DA',
+    borderColor: '#ECEAFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
   emojiBtnSelected: {
-    borderColor: '#D4845A',
-    backgroundColor: '#FDF0E8',
+    borderColor: '#7C6FCD',
+    backgroundColor: '#EDE9FF',
   },
   emoji: { fontSize: 22 },
   currentReactions: {
@@ -105,5 +105,5 @@ const styles = StyleSheet.create({
     gap: 16,
     marginTop: 10,
   },
-  reactionLabel: { fontSize: 14, color: '#5C4A38', fontWeight: '500' },
+  reactionLabel: { fontSize: 14, color: '#6B6585', fontWeight: '500' },
 });

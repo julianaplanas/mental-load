@@ -3,8 +3,8 @@ import { useAuth } from '@/hooks/useAuth';
 import type { UserId } from '@/types';
 
 const USERS: { id: UserId; name: string; emoji: string; color: string }[] = [
-  { id: 'juli', name: 'Juli', emoji: '🌸', color: '#D4845A' },
-  { id: 'gino', name: 'Gino', emoji: '🌿', color: '#5A9E8A' },
+  { id: 'juli', name: 'Juli', emoji: '🌸', color: '#E8709A' },
+  { id: 'gino', name: 'Gino', emoji: '🌿', color: '#5CC8BD' },
 ];
 
 export default function AuthScreen() {
@@ -43,7 +43,7 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FDF6EE',
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 32,
     justifyContent: 'space-between',
     paddingVertical: 60,
@@ -54,12 +54,12 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 56,
     fontWeight: '700',
-    color: '#2C2C2C',
+    color: '#1A1826',
     letterSpacing: -2,
   },
   subtitle: {
     fontSize: 16,
-    color: '#8A7F77',
+    color: '#9B96B0',
     marginTop: 6,
     letterSpacing: 0.5,
   },
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   question: {
     fontSize: 22,
     fontWeight: '600',
-    color: '#2C2C2C',
+    color: '#1A1826',
     textAlign: 'center',
     marginBottom: 8,
   },
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   footnote: {
     textAlign: 'center',
     fontSize: 13,
-    color: '#B0A8A0',
+    color: '#9B96B0',
     lineHeight: 20,
   },
 });

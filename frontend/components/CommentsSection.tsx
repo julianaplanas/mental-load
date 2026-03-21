@@ -79,7 +79,7 @@ export function CommentsSection({ cardId, comments, currentUserId, onUpdate }: P
             value={text}
             onChangeText={setText}
             placeholder="Add a comment..."
-            placeholderTextColor="#C0B5AC"
+            placeholderTextColor="#B8B4CC"
             multiline
           />
           <TouchableOpacity
@@ -100,45 +100,45 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#8A7F77',
+    color: '#9B96B0',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 12,
   },
-  empty: { fontSize: 14, color: '#B0A8A0', fontStyle: 'italic', marginBottom: 12 },
+  empty: { fontSize: 14, color: '#9B96B0', fontStyle: 'italic', marginBottom: 12 },
   list: { gap: 10, marginBottom: 14 },
   comment: {
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#EDE5DA',
+    borderColor: '#ECEAFF',
   },
   commentHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 4,
   },
-  author: { fontSize: 13, fontWeight: '700', color: '#D4845A' },
-  timestamp: { fontSize: 12, color: '#B0A8A0' },
-  commentText: { fontSize: 14, color: '#2C2C2C', lineHeight: 20 },
+  author: { fontSize: 13, fontWeight: '700', color: '#7C6FCD' },
+  timestamp: { fontSize: 12, color: '#9B96B0' },
+  commentText: { fontSize: 14, color: '#1A1826', lineHeight: 20 },
   inputRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-end' },
   input: {
     flex: 1,
     borderWidth: 1.5,
-    borderColor: '#EDE5DA',
-    borderRadius: 12,
+    borderColor: '#ECEAFF',
+    borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#2C2C2C',
+    color: '#1A1826',
     backgroundColor: '#fff',
     minHeight: 42,
     maxHeight: 100,
   },
   sendBtn: {
-    backgroundColor: '#D4845A',
-    borderRadius: 10,
+    backgroundColor: '#7C6FCD',
+    borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 10,
     height: 42,

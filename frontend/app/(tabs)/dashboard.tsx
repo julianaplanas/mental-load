@@ -360,7 +360,7 @@ export default function DashboardScreen() {
 
       {loading ? (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#D4845A" />
+          <ActivityIndicator size="large" color="#7C6FCD" />
         </View>
       ) : (
         <ScrollView
@@ -375,11 +375,11 @@ export default function DashboardScreen() {
             <CategoryBars data={categoryStats} />
             <View style={styles.legend}>
               <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: '#5A9E8A' }]} />
+                <View style={[styles.legendDot, { backgroundColor: '#5CC8BD' }]} />
                 <Text style={styles.legendLabel}>Done</Text>
               </View>
               <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: '#F4945A' }]} />
+                <View style={[styles.legendDot, { backgroundColor: '#F5A064' }]} />
                 <Text style={styles.legendLabel}>Pending</Text>
               </View>
             </View>
@@ -401,11 +401,11 @@ export default function DashboardScreen() {
             <TrendBars data={trend} />
             <View style={styles.legend}>
               <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: '#5A9E8A' }]} />
+                <View style={[styles.legendDot, { backgroundColor: '#5CC8BD' }]} />
                 <Text style={styles.legendLabel}>Done</Text>
               </View>
               <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: '#F4945A' }]} />
+                <View style={[styles.legendDot, { backgroundColor: '#F5A064' }]} />
                 <Text style={styles.legendLabel}>Pending</Text>
               </View>
             </View>
@@ -429,27 +429,27 @@ export default function DashboardScreen() {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FDF6EE' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#EDE5DA',
+    borderBottomColor: '#ECEAFF',
     gap: 10,
   },
-  title: { fontSize: 28, fontWeight: '700', color: '#2C2C2C' },
+  title: { fontSize: 28, fontWeight: '700', color: '#1A1826' },
   toggle: {
     flexDirection: 'row',
-    backgroundColor: '#EDE5DA',
+    backgroundColor: '#F0EEF8',
     borderRadius: 10,
     padding: 3,
     alignSelf: 'flex-start',
   },
   toggleBtn: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8 },
   toggleBtnActive: { backgroundColor: '#fff', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
-  toggleLabel: { fontSize: 13, fontWeight: '600', color: '#8A7F77' },
-  toggleLabelActive: { color: '#2C2C2C' },
+  toggleLabel: { fontSize: 13, fontWeight: '600', color: '#9B96B0' },
+  toggleLabelActive: { color: '#1A1826' },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scroll: { flex: 1 },
   scrollContent: { padding: 16, gap: 14 },
@@ -460,49 +460,49 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: 18,
     borderWidth: 1,
-    borderColor: '#EDE5DA',
-    shadowColor: '#2C2C2C',
+    borderColor: '#ECEAFF',
+    shadowColor: '#1A1826',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 6,
     elevation: 1,
     gap: 12,
   },
-  panelTitle: { fontSize: 15, fontWeight: '700', color: '#2C2C2C' },
-  emptyNote: { fontSize: 14, color: '#B0A8A0', fontStyle: 'italic' },
+  panelTitle: { fontSize: 15, fontWeight: '700', color: '#1A1826' },
+  emptyNote: { fontSize: 14, color: '#9B96B0', fontStyle: 'italic' },
 
   // Category bars
   catList: { gap: 10 },
   catRow: { gap: 4 },
-  catLabel: { fontSize: 13, fontWeight: '600', color: '#5C4A38' },
+  catLabel: { fontSize: 13, fontWeight: '600', color: '#6B6585' },
   catBarArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   catBarTrack: { flexDirection: 'row', height: 10, borderRadius: 5, overflow: 'hidden', flex: 1 },
-  catBarDone: { backgroundColor: '#5A9E8A', height: '100%' },
-  catBarPending: { backgroundColor: '#F4945A', height: '100%' },
-  catCount: { fontSize: 12, fontWeight: '700', color: '#2C2C2C', width: 24, textAlign: 'right' },
-  catBreakdown: { fontSize: 11, color: '#B0A8A0' },
+  catBarDone: { backgroundColor: '#5CC8BD', height: '100%' },
+  catBarPending: { backgroundColor: '#F5A064', height: '100%' },
+  catCount: { fontSize: 12, fontWeight: '700', color: '#1A1826', width: 24, textAlign: 'right' },
+  catBreakdown: { fontSize: 11, color: '#9B96B0' },
 
   // Legend
   legend: { flexDirection: 'row', gap: 14, marginTop: 2 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   legendDot: { width: 8, height: 8, borderRadius: 4 },
-  legendLabel: { fontSize: 12, color: '#8A7F77' },
+  legendLabel: { fontSize: 12, color: '#9B96B0' },
 
   // Fairness
-  fairnessLabel: { fontSize: 13, color: '#8A7F77', fontStyle: 'italic', marginBottom: 10 },
+  fairnessLabel: { fontSize: 13, color: '#9B96B0', fontStyle: 'italic', marginBottom: 10 },
   fairnessCards: { flexDirection: 'row', gap: 10 },
   fairnessCard: {
     flex: 1,
-    backgroundColor: '#FDF6EE',
+    backgroundColor: '#F7F5FF',
     borderRadius: 12,
     padding: 14,
     gap: 6,
     borderWidth: 1,
-    borderColor: '#EDE5DA',
+    borderColor: '#ECEAFF',
   },
-  fairnessName: { fontSize: 16, fontWeight: '700', color: '#2C2C2C' },
-  fairnessStat: { fontSize: 13, color: '#5C4A38' },
-  fairnessNum: { fontWeight: '700', fontSize: 16, color: '#D4845A' },
+  fairnessName: { fontSize: 16, fontWeight: '700', color: '#1A1826' },
+  fairnessStat: { fontSize: 13, color: '#6B6585' },
+  fairnessNum: { fontWeight: '700', fontSize: 16, color: '#7C6FCD' },
   balanceBarTrack: {
     flexDirection: 'row',
     height: 8,
@@ -510,22 +510,22 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginTop: 12,
   },
-  balanceBarJuli: { backgroundColor: '#D4845A' },
-  balanceBarGino: { backgroundColor: '#5A9E8A' },
+  balanceBarJuli: { backgroundColor: '#E8709A' },
+  balanceBarGino: { backgroundColor: '#5CC8BD' },
   balanceLabels: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
-  balanceLabelLeft: { fontSize: 11, color: '#D4845A', fontWeight: '600' },
-  balanceLabelRight: { fontSize: 11, color: '#5A9E8A', fontWeight: '600' },
+  balanceLabelLeft: { fontSize: 11, color: '#E8709A', fontWeight: '600' },
+  balanceLabelRight: { fontSize: 11, color: '#5CC8BD', fontWeight: '600' },
 
   // Trend chart
-  trendSubtitle: { fontSize: 12, color: '#8A7F77', marginTop: -6 },
+  trendSubtitle: { fontSize: 12, color: '#9B96B0', marginTop: -6 },
   trendContainer: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'flex-end' },
   trendColumn: { flex: 1, alignItems: 'center', gap: 4 },
-  trendValue: { fontSize: 12, fontWeight: '600', color: '#2C2C2C', height: 16 },
+  trendValue: { fontSize: 12, fontWeight: '600', color: '#1A1826', height: 16 },
   trendBarWrapper: { justifyContent: 'flex-end', width: '60%' },
   trendBar: { width: '100%', borderRadius: 4, overflow: 'hidden', flexDirection: 'column-reverse' },
-  trendBarDone: { backgroundColor: '#5A9E8A' },
-  trendBarPending: { backgroundColor: '#F4945A' },
-  trendLabel: { fontSize: 11, color: '#B0A8A0', textAlign: 'center' },
+  trendBarDone: { backgroundColor: '#5CC8BD' },
+  trendBarPending: { backgroundColor: '#F5A064' },
+  trendLabel: { fontSize: 11, color: '#9B96B0', textAlign: 'center' },
 
   // Upcoming
   upcomingList: { gap: 2 },
@@ -535,13 +535,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#F5EDE4',
+    borderBottomColor: '#F0EEF8',
     gap: 8,
   },
   upcomingLeft: { flex: 1, gap: 2 },
-  upcomingTitle: { fontSize: 14, fontWeight: '600', color: '#2C2C2C' },
-  upcomingTag: { fontSize: 12, color: '#8A7F77' },
-  upcomingDate: { fontSize: 12, color: '#D4845A', fontWeight: '600' },
+  upcomingTitle: { fontSize: 14, fontWeight: '600', color: '#1A1826' },
+  upcomingTag: { fontSize: 12, color: '#9B96B0' },
+  upcomingDate: { fontSize: 12, color: '#7C6FCD', fontWeight: '600' },
 
   // Recent
   recentList: { gap: 2 },
@@ -550,11 +550,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#F5EDE4',
+    borderBottomColor: '#F0EEF8',
     gap: 12,
   },
   recentEmoji: { fontSize: 18 },
   recentInfo: { flex: 1, gap: 2 },
-  recentTitle: { fontSize: 14, fontWeight: '600', color: '#2C2C2C' },
-  recentMeta: { fontSize: 12, color: '#8A7F77' },
+  recentTitle: { fontSize: 14, fontWeight: '600', color: '#1A1826' },
+  recentMeta: { fontSize: 12, color: '#9B96B0' },
 });

@@ -10,6 +10,12 @@ const PRIORITY_DOT: Record<string, string> = {
   low: '🟢',
 };
 
+const PRIORITY_BORDER: Record<string, string> = {
+  urgent: '#F06565',
+  normal: '#7C6FCD',
+  low: '#5CC8BD',
+};
+
 const ASSIGNED_LABEL: Record<string, string> = {
   juli: 'Juli',
   gino: 'Gino',
@@ -33,7 +39,7 @@ export function CardItem({ card }: Props) {
 
   return (
     <TouchableOpacity
-      style={styles.card}
+      style={[styles.card, { borderLeftColor: PRIORITY_BORDER[card.priority] ?? '#7C6FCD' }]}
       onPress={() => router.push(`/card/${card.id}`)}
       activeOpacity={0.8}
     >
@@ -115,12 +121,13 @@ const styles = StyleSheet.create({
     padding: 16,
     marginHorizontal: 16,
     marginVertical: 6,
-    shadowColor: '#2C2C2C',
+    shadowColor: '#1A1826',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.07,
     shadowRadius: 6,
     elevation: 2,
     gap: 8,
+    borderLeftWidth: 4,
   },
   topRow: {
     flexDirection: 'row',
@@ -134,14 +141,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tagPill: {
-    backgroundColor: '#F5EDE4',
+    backgroundColor: '#EDE9FF',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
   tagText: {
     fontSize: 12,
-    color: '#5C4A38',
+    color: '#6B6585',
     fontWeight: '500',
   },
   priorityDot: {
@@ -150,7 +157,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#2C2C2C',
+    color: '#1A1826',
     lineHeight: 22,
   },
   bottomRow: {
@@ -167,25 +174,25 @@ const styles = StyleSheet.create({
   },
   assignedText: {
     fontSize: 12,
-    color: '#8A7F77',
+    color: '#9B96B0',
   },
   statusBadge: {
-    backgroundColor: '#E8F4F0',
+    backgroundColor: '#E0F5F3',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 6,
   },
   waitingBadge: {
-    backgroundColor: '#FFF3E0',
+    backgroundColor: '#FFF5E0',
   },
   statusText: {
     fontSize: 11,
-    color: '#5A9E8A',
+    color: '#5CC8BD',
     fontWeight: '500',
   },
   recurringText: {
     fontSize: 12,
-    color: '#8A7F77',
+    color: '#9B96B0',
   },
   bottomRight: {
     flexDirection: 'row',
@@ -193,21 +200,21 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   subtaskPill: {
-    backgroundColor: '#F5EDE4',
+    backgroundColor: '#EDE9FF',
     paddingHorizontal: 7,
     paddingVertical: 2,
     borderRadius: 6,
   },
   subtaskPillDone: {
-    backgroundColor: '#E8F4F0',
+    backgroundColor: '#E0F5F3',
   },
   subtaskPillText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#8A7F77',
+    color: '#9B96B0',
   },
   subtaskPillTextDone: {
-    color: '#5A9E8A',
+    color: '#5CC8BD',
   },
   reactions: {
     flexDirection: 'row',

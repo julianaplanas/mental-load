@@ -189,7 +189,7 @@ export default function GroceryScreen() {
 
       {loading ? (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#D4845A" />
+          <ActivityIndicator size="large" color="#7C6FCD" />
         </View>
       ) : (
         <KeyboardAvoidingView
@@ -247,7 +247,7 @@ export default function GroceryScreen() {
                   value={newQty}
                   onChangeText={setNewQty}
                   placeholder="Quantity (e.g. x2)"
-                  placeholderTextColor="#C0B5AC"
+                  placeholderTextColor="#B8B4CC"
                 />
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   <View style={styles.catRow}>
@@ -273,7 +273,7 @@ export default function GroceryScreen() {
                 value={newName}
                 onChangeText={setNewName}
                 placeholder="Add an item..."
-                placeholderTextColor="#C0B5AC"
+                placeholderTextColor="#B8B4CC"
                 onSubmitEditing={handleAdd}
                 returnKeyType="done"
               />
@@ -346,7 +346,7 @@ function ItemRow({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FDF6EE' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -355,35 +355,35 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#EDE5DA',
+    borderBottomColor: '#ECEAFF',
   },
-  title: { fontSize: 28, fontWeight: '700', color: '#2C2C2C' },
+  title: { fontSize: 28, fontWeight: '700', color: '#1A1826' },
   clearBtn: {
-    backgroundColor: '#F5EDE4',
+    backgroundColor: '#EDE9FF',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
   },
-  clearBtnText: { fontSize: 13, fontWeight: '600', color: '#D4845A' },
+  clearBtnText: { fontSize: 13, fontWeight: '600', color: '#7C6FCD' },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   list: { flex: 1 },
   listContent: { paddingTop: 8 },
   emptyContainer: { flex: 1 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 100, gap: 10 },
   emptyEmoji: { fontSize: 48 },
-  emptyTitle: { fontSize: 20, fontWeight: '600', color: '#2C2C2C' },
-  emptySub: { fontSize: 14, color: '#8A7F77' },
+  emptyTitle: { fontSize: 20, fontWeight: '600', color: '#1A1826' },
+  emptySub: { fontSize: 14, color: '#9B96B0' },
   section: { marginBottom: 4 },
   sectionHeader: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#8A7F77',
+    color: '#9B96B0',
     paddingHorizontal: 20,
     paddingVertical: 10,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  sectionHeaderChecked: { color: '#B0A8A0' },
+  sectionHeaderChecked: { color: '#9B96B0' },
   // Item row
   itemRow: {
     flexDirection: 'row',
@@ -395,37 +395,37 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#EDE5DA',
+    borderColor: '#ECEAFF',
   },
-  itemRowChecked: { backgroundColor: '#F8F4F0', borderColor: '#F0E8DF' },
+  itemRowChecked: { backgroundColor: '#F7F5FF', borderColor: '#ECEAFF' },
   checkboxArea: { paddingHorizontal: 14 },
   checkbox: {
     width: 22,
     height: 22,
     borderRadius: 11,
     borderWidth: 2,
-    borderColor: '#D4845A',
+    borderColor: '#7C6FCD',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  checkboxChecked: { backgroundColor: '#D4845A', borderColor: '#D4845A' },
+  checkboxChecked: { backgroundColor: '#7C6FCD', borderColor: '#7C6FCD' },
   checkmark: { color: '#fff', fontSize: 13, fontWeight: '700' },
   itemInfo: { flex: 1, gap: 2 },
-  itemName: { fontSize: 16, color: '#2C2C2C', fontWeight: '500' },
+  itemName: { fontSize: 16, color: '#1A1826', fontWeight: '500' },
   itemNameChecked: {
-    color: '#B0A8A0',
+    color: '#9B96B0',
     textDecorationLine: 'line-through',
-    textDecorationColor: '#B0A8A0',
+    textDecorationColor: '#9B96B0',
   },
-  itemQty: { fontSize: 13, color: '#8A7F77' },
-  itemQtyChecked: { color: '#C0B5AC' },
+  itemQty: { fontSize: 13, color: '#9B96B0' },
+  itemQtyChecked: { color: '#B8B4CC' },
   deleteBtn: { paddingLeft: 12 },
-  deleteIcon: { fontSize: 22, color: '#C0B5AC', lineHeight: 24 },
+  deleteIcon: { fontSize: 22, color: '#B8B4CC', lineHeight: 24 },
   // Add bar
   addBar: {
     backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: '#EDE5DA',
+    borderTopColor: '#ECEAFF',
     paddingBottom: Platform.OS === 'ios' ? 0 : 8,
   },
   expandedForm: {
@@ -433,18 +433,18 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     gap: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0E8DF',
+    borderBottomColor: '#ECEAFF',
     paddingBottom: 10,
   },
   expandedInput: {
     borderWidth: 1.5,
-    borderColor: '#EDE5DA',
+    borderColor: '#ECEAFF',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 8,
     fontSize: 14,
-    color: '#2C2C2C',
-    backgroundColor: '#FDF6EE',
+    color: '#1A1826',
+    backgroundColor: '#F7F5FF',
   },
   catRow: { flexDirection: 'row', gap: 6 },
   catChip: {
@@ -452,12 +452,12 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 8,
     borderWidth: 1.5,
-    borderColor: '#EDE5DA',
-    backgroundColor: '#FDF6EE',
+    borderColor: '#ECEAFF',
+    backgroundColor: '#F7F5FF',
   },
-  catChipSelected: { borderColor: '#D4845A', backgroundColor: '#FDF0E8' },
-  catChipText: { fontSize: 12, color: '#8A7F77', fontWeight: '500' },
-  catChipTextSelected: { color: '#D4845A', fontWeight: '600' },
+  catChipSelected: { borderColor: '#7C6FCD', backgroundColor: '#EDE9FF' },
+  catChipText: { fontSize: 12, color: '#9B96B0', fontWeight: '500' },
+  catChipTextSelected: { color: '#7C6FCD', fontWeight: '600' },
   addRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -468,29 +468,29 @@ const styles = StyleSheet.create({
   addInput: {
     flex: 1,
     borderWidth: 1.5,
-    borderColor: '#EDE5DA',
+    borderColor: '#ECEAFF',
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 15,
-    color: '#2C2C2C',
-    backgroundColor: '#FDF6EE',
+    color: '#1A1826',
+    backgroundColor: '#F7F5FF',
     height: 44,
   },
   expandBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#F5EDE4',
+    backgroundColor: '#EDE9FF',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  expandBtnText: { fontSize: 12, color: '#D4845A' },
+  expandBtnText: { fontSize: 12, color: '#7C6FCD' },
   addBtn: {
-    backgroundColor: '#D4845A',
+    backgroundColor: '#7C6FCD',
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 12,
+    borderRadius: 16,
     height: 44,
     justifyContent: 'center',
   },
@@ -502,7 +502,7 @@ const styles = StyleSheet.create({
     bottom: 90,
     left: 20,
     right: 20,
-    backgroundColor: '#2C2C2C',
+    backgroundColor: '#1A1826',
     borderRadius: 14,
     flexDirection: 'row',
     alignItems: 'center',
@@ -520,7 +520,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 6,
-    backgroundColor: '#D4845A',
+    backgroundColor: '#7C6FCD',
     marginLeft: 12,
   },
   undoBtnText: { color: '#fff', fontWeight: '700', fontSize: 13 },

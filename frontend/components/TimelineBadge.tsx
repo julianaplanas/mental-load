@@ -48,23 +48,23 @@ export function TimelineBadge({ card, small }: Props) {
 
   if (overdue) {
     label = 'Overdue';
-    bg = '#E85555';
+    bg = '#F06565';
   } else if (card.timeline === 'today') {
     label = 'Today';
-    bg = '#E85555';
+    bg = '#F06565';
   } else if (card.timeline === 'this_week') {
     label = 'This week';
-    bg = '#F4945A';
+    bg = '#F5A064';
   } else if (card.timeline === 'this_month') {
     label = 'This month';
-    bg = '#5B9BD5';
+    bg = '#6BA8E8';
   } else if (card.timeline === 'custom' && card.custom_date) {
     const d = parseLocalDate(card.custom_date);
     label = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-    bg = '#5B9BD5';
+    bg = '#6BA8E8';
   } else {
     label = card.timeline;
-    bg = '#8A7F77';
+    bg = '#9B96B0';
   }
 
   return (
@@ -78,13 +78,13 @@ const styles = StyleSheet.create({
   badge: {
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 6,
+    borderRadius: 10,
     alignSelf: 'flex-start',
   },
   small: {
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: 8,
   },
   text: {
     color: '#fff',

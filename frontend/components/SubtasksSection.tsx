@@ -126,7 +126,7 @@ export function SubtasksSection({ cardId, subtasks, currentUserId, onUpdate }: P
           <TextInput
             style={styles.addInput}
             placeholder="What needs to happen?"
-            placeholderTextColor="#C0B5AC"
+            placeholderTextColor="#B8B4CC"
             value={newTitle}
             onChangeText={setNewTitle}
             autoFocus
@@ -239,35 +239,35 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#8A7F77',
+    color: '#9B96B0',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   progressPill: {
-    backgroundColor: '#F5EDE4',
+    backgroundColor: '#EDE9FF',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 10,
   },
   progressPillDone: {
-    backgroundColor: '#E8F4F0',
+    backgroundColor: '#E0F5F3',
   },
   progressText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#8A7F77',
+    color: '#9B96B0',
   },
   progressTextDone: {
-    color: '#5A9E8A',
+    color: '#5CC8BD',
   },
   addToggle: {
     fontSize: 14,
-    color: '#5B9BD5',
+    color: '#7C6FCD',
     fontWeight: '600',
   },
   empty: {
     fontSize: 13,
-    color: '#B0A8A0',
+    color: '#9B96B0',
     fontStyle: 'italic',
     textAlign: 'center',
     paddingVertical: 12,
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#F5EDE4',
+    borderBottomColor: '#F0EEF8',
     gap: 10,
   },
   statusBtn: {
@@ -289,17 +289,17 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 11,
     borderWidth: 2,
-    borderColor: '#C0B5AC',
+    borderColor: '#B8B4CC',
     alignItems: 'center',
     justifyContent: 'center',
   },
   statusCircleDone: {
-    borderColor: '#5A9E8A',
-    backgroundColor: '#5A9E8A',
+    borderColor: '#5CC8BD',
+    backgroundColor: '#5CC8BD',
   },
   statusCircleOnIt: {
-    borderColor: '#D4845A',
-    backgroundColor: '#FDF0E8',
+    borderColor: '#7C6FCD',
+    backgroundColor: '#EDE9FF',
   },
   statusCheckmark: {
     color: '#fff',
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#D4845A',
+    backgroundColor: '#7C6FCD',
   },
   rowContent: {
     flex: 1,
@@ -319,24 +319,24 @@ const styles = StyleSheet.create({
   },
   rowTitle: {
     fontSize: 15,
-    color: '#2C2C2C',
+    color: '#1A1826',
     fontWeight: '500',
     lineHeight: 20,
   },
   rowTitleDone: {
-    color: '#B0A8A0',
+    color: '#9B96B0',
     textDecorationLine: 'line-through',
   },
   statusNote: {
     fontSize: 12,
-    color: '#D4845A',
+    color: '#7C6FCD',
     fontWeight: '500',
   },
   statusNoteDone: {
-    color: '#5A9E8A',
+    color: '#5CC8BD',
   },
   assignBadge: {
-    backgroundColor: '#F5EDE4',
+    backgroundColor: '#EDE9FF',
     paddingHorizontal: 7,
     paddingVertical: 2,
     borderRadius: 6,
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
   },
   assignBadgeText: {
     fontSize: 11,
-    color: '#5C4A38',
+    color: '#6B6585',
     fontWeight: '600',
   },
   deleteBtn: {
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
   },
   deleteIcon: {
     fontSize: 18,
-    color: '#C0B5AC',
+    color: '#B8B4CC',
     lineHeight: 22,
   },
   // Add form
@@ -363,11 +363,11 @@ const styles = StyleSheet.create({
   },
   addInput: {
     borderWidth: 1.5,
-    borderColor: '#D4845A',
+    borderColor: '#7C6FCD',
     borderRadius: 10,
     padding: 12,
     fontSize: 15,
-    color: '#2C2C2C',
+    color: '#1A1826',
     backgroundColor: '#fff',
   },
   assignRow: {
@@ -380,25 +380,25 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 8,
     borderWidth: 1.5,
-    borderColor: '#EDE5DA',
+    borderColor: '#ECEAFF',
     backgroundColor: '#fff',
   },
   assignChipSelected: {
-    borderColor: '#D4845A',
-    backgroundColor: '#FDF0E8',
+    borderColor: '#7C6FCD',
+    backgroundColor: '#EDE9FF',
   },
   assignChipText: {
     fontSize: 13,
-    color: '#8A7F77',
+    color: '#9B96B0',
     fontWeight: '500',
   },
   assignChipTextSelected: {
-    color: '#D4845A',
+    color: '#7C6FCD',
     fontWeight: '600',
   },
   addBtn: {
-    backgroundColor: '#D4845A',
-    borderRadius: 10,
+    backgroundColor: '#7C6FCD',
+    borderRadius: 16,
     paddingVertical: 11,
     alignItems: 'center',
   },

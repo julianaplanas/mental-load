@@ -29,7 +29,7 @@ export default function FeedScreen() {
 
       {loading && !refreshing ? (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#D4845A" />
+          <ActivityIndicator size="large" color="#7C6FCD" />
         </View>
       ) : error ? (
         <View style={styles.centered}>
@@ -61,7 +61,7 @@ export default function FeedScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FDF6EE' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -70,33 +70,33 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#EDE5DA',
+    borderBottomColor: '#ECEAFF',
   },
-  title: { fontSize: 28, fontWeight: '700', color: '#2C2C2C' },
+  title: { fontSize: 28, fontWeight: '700', color: '#1A1826' },
   addButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#D4845A',
+    backgroundColor: '#7C6FCD',
     alignItems: 'center',
     justifyContent: 'center',
   },
   addButtonText: { color: '#fff', fontSize: 22, lineHeight: 26 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   errorEmoji: { fontSize: 40 },
-  errorText: { fontSize: 15, color: '#8A7F77', textAlign: 'center', paddingHorizontal: 32 },
+  errorText: { fontSize: 15, color: '#9B96B0', textAlign: 'center', paddingHorizontal: 32 },
   retryBtn: {
     marginTop: 4,
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: '#D4845A',
-    borderRadius: 10,
+    backgroundColor: '#7C6FCD',
+    borderRadius: 16,
   },
   retryText: { color: '#fff', fontWeight: '600', fontSize: 15 },
   listContent: { paddingVertical: 12 },
   emptyContainer: { flex: 1 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 120, gap: 10 },
   emptyEmoji: { fontSize: 48 },
-  emptyTitle: { fontSize: 20, fontWeight: '600', color: '#2C2C2C' },
-  emptySubtitle: { fontSize: 14, color: '#8A7F77', textAlign: 'center', paddingHorizontal: 40 },
+  emptyTitle: { fontSize: 20, fontWeight: '600', color: '#1A1826' },
+  emptySubtitle: { fontSize: 14, color: '#9B96B0', textAlign: 'center', paddingHorizontal: 40 },
 });

@@ -73,14 +73,14 @@ const seg = StyleSheet.create({
   option: {
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 10,
+    borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: '#EDE5DA',
+    borderColor: '#ECEAFF',
     backgroundColor: '#fff',
   },
-  selected: { borderColor: '#D4845A', backgroundColor: '#FDF0E8' },
-  label: { fontSize: 14, color: '#8A7F77', fontWeight: '500' },
-  selectedLabel: { color: '#D4845A', fontWeight: '600' },
+  selected: { borderColor: '#7C6FCD', backgroundColor: '#EDE9FF' },
+  label: { fontSize: 14, color: '#9B96B0', fontWeight: '500' },
+  selectedLabel: { color: '#7C6FCD', fontWeight: '600' },
 });
 
 export default function EditCardScreen() {
@@ -169,7 +169,7 @@ export default function EditCardScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#D4845A" />
+          <ActivityIndicator size="large" color="#7C6FCD" />
         </View>
       </SafeAreaView>
     );
@@ -197,7 +197,7 @@ export default function EditCardScreen() {
           <TextInput
             style={styles.titleInput}
             placeholder="What needs to be done?"
-            placeholderTextColor="#C0B5AC"
+            placeholderTextColor="#B8B4CC"
             value={title}
             onChangeText={setTitle}
             multiline
@@ -212,7 +212,7 @@ export default function EditCardScreen() {
             <TextInput
               style={styles.dateInput}
               placeholder="YYYY-MM-DD"
-              placeholderTextColor="#C0B5AC"
+              placeholderTextColor="#B8B4CC"
               value={customDate}
               onChangeText={setCustomDate}
               keyboardType="numeric"
@@ -275,7 +275,7 @@ export default function EditCardScreen() {
               <TextInput
                 style={styles.customTagInput}
                 placeholder="e.g. Garden, Car..."
-                placeholderTextColor="#C0B5AC"
+                placeholderTextColor="#B8B4CC"
                 value={customTagInput}
                 onChangeText={setCustomTagInput}
                 autoFocus
@@ -306,7 +306,7 @@ export default function EditCardScreen() {
             <Switch
               value={isRecurring}
               onValueChange={setIsRecurring}
-              trackColor={{ true: '#D4845A' }}
+              trackColor={{ true: '#7C6FCD' }}
               thumbColor="#fff"
             />
           </View>
@@ -325,7 +325,7 @@ export default function EditCardScreen() {
           <TextInput
             style={styles.notesInput}
             placeholder="Any extra context..."
-            placeholderTextColor="#C0B5AC"
+            placeholderTextColor="#B8B4CC"
             value={notes}
             onChangeText={setNotes}
             multiline
@@ -340,7 +340,7 @@ export default function EditCardScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FDF6EE' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   navBar: {
     flexDirection: 'row',
@@ -349,34 +349,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#EDE5DA',
+    borderBottomColor: '#ECEAFF',
   },
-  cancel: { fontSize: 16, color: '#8A7F77' },
-  navTitle: { fontSize: 17, fontWeight: '600', color: '#2C2C2C' },
+  cancel: { fontSize: 16, color: '#9B96B0' },
+  navTitle: { fontSize: 17, fontWeight: '600', color: '#1A1826' },
   saveBtn: {
-    backgroundColor: '#D4845A',
+    backgroundColor: '#7C6FCD',
     paddingHorizontal: 14,
     paddingVertical: 7,
-    borderRadius: 10,
+    borderRadius: 16,
   },
   saveBtnText: { color: '#fff', fontWeight: '600', fontSize: 14 },
   scroll: { flex: 1 },
   section: { paddingHorizontal: 20, paddingVertical: 14, gap: 10 },
-  label: { fontSize: 13, fontWeight: '600', color: '#8A7F77', textTransform: 'uppercase', letterSpacing: 0.5 },
+  label: { fontSize: 13, fontWeight: '600', color: '#9B96B0', textTransform: 'uppercase', letterSpacing: 0.5 },
   titleInput: {
     fontSize: 22,
     fontWeight: '600',
-    color: '#2C2C2C',
+    color: '#1A1826',
     lineHeight: 30,
     minHeight: 60,
   },
   dateInput: {
     borderWidth: 1.5,
-    borderColor: '#EDE5DA',
+    borderColor: '#ECEAFF',
     borderRadius: 10,
     padding: 12,
     fontSize: 15,
-    color: '#2C2C2C',
+    color: '#1A1826',
     backgroundColor: '#fff',
     marginTop: 4,
   },
@@ -385,19 +385,19 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: '#EDE5DA',
+    borderColor: '#ECEAFF',
     backgroundColor: '#fff',
   },
-  tagChipSelected: { borderColor: '#D4845A', backgroundColor: '#FDF0E8' },
-  tagChipText: { fontSize: 13, color: '#8A7F77', fontWeight: '500' },
-  tagChipTextSelected: { color: '#D4845A', fontWeight: '600' },
+  tagChipSelected: { borderColor: '#7C6FCD', backgroundColor: '#EDE9FF' },
+  tagChipText: { fontSize: 13, color: '#9B96B0', fontWeight: '500' },
+  tagChipTextSelected: { color: '#7C6FCD', fontWeight: '600' },
   notesInput: {
     borderWidth: 1.5,
-    borderColor: '#EDE5DA',
+    borderColor: '#ECEAFF',
     borderRadius: 12,
     padding: 12,
     fontSize: 15,
-    color: '#2C2C2C',
+    color: '#1A1826',
     backgroundColor: '#fff',
     minHeight: 80,
     textAlignVertical: 'top',
@@ -407,16 +407,16 @@ const styles = StyleSheet.create({
   customTagInput: {
     flex: 1,
     borderWidth: 1.5,
-    borderColor: '#D4845A',
+    borderColor: '#7C6FCD',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 9,
     fontSize: 14,
-    color: '#2C2C2C',
+    color: '#1A1826',
     backgroundColor: '#fff',
   },
   customTagConfirm: {
-    backgroundColor: '#D4845A',
+    backgroundColor: '#7C6FCD',
     borderRadius: 10,
     paddingHorizontal: 16,
     justifyContent: 'center',

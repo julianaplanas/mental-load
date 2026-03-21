@@ -173,7 +173,7 @@ export default function CardDetailScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#D4845A" />
+          <ActivityIndicator size="large" color="#7C6FCD" />
         </View>
       </SafeAreaView>
     );
@@ -264,7 +264,7 @@ export default function CardDetailScreen() {
               value={waitingNote}
               onChangeText={setWaitingNote}
               placeholder="What are you waiting on?"
-              placeholderTextColor="#C0B5AC"
+              placeholderTextColor="#B8B4CC"
               autoFocus
             />
           )}
@@ -341,7 +341,7 @@ export default function CardDetailScreen() {
                   value={groceryItem}
                   onChangeText={setGroceryItem}
                   placeholder="Item name..."
-                  placeholderTextColor="#C0B5AC"
+                  placeholderTextColor="#B8B4CC"
                   autoFocus
                 />
                 <TouchableOpacity
@@ -415,7 +415,7 @@ function ActionButton({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FDF6EE' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   navBar: {
     flexDirection: 'row',
@@ -424,12 +424,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#EDE5DA',
+    borderBottomColor: '#ECEAFF',
   },
-  back: { fontSize: 17, color: '#D4845A', fontWeight: '500' },
+  back: { fontSize: 17, color: '#7C6FCD', fontWeight: '500' },
   navRight: { flexDirection: 'row', gap: 16, alignItems: 'center' },
-  editText: { fontSize: 15, color: '#5B9BD5', fontWeight: '500' },
-  deleteText: { fontSize: 15, color: '#E85555' },
+  editText: { fontSize: 15, color: '#7C6FCD', fontWeight: '500' },
+  deleteText: { fontSize: 15, color: '#F06565' },
   scroll: { flex: 1 },
   cardHeader: {
     flexDirection: 'row',
@@ -440,12 +440,12 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     flexWrap: 'wrap',
   },
-  priorityLabel: { fontSize: 13, color: '#8A7F77', fontWeight: '500' },
-  snoozeCount: { fontSize: 13, color: '#B0A8A0', fontWeight: '500' },
+  priorityLabel: { fontSize: 13, color: '#9B96B0', fontWeight: '500' },
+  snoozeCount: { fontSize: 13, color: '#9B96B0', fontWeight: '500' },
   title: {
     fontSize: 26,
     fontWeight: '700',
-    color: '#2C2C2C',
+    color: '#1A1826',
     paddingHorizontal: 20,
     lineHeight: 34,
     marginBottom: 12,
@@ -453,14 +453,14 @@ const styles = StyleSheet.create({
   statusBanner: {
     marginHorizontal: 20,
     marginBottom: 12,
-    backgroundColor: '#E8F4F0',
+    backgroundColor: '#E0F5F3',
     borderRadius: 10,
     padding: 12,
   },
-  waitingBanner: { backgroundColor: '#FFF3E0' },
-  snoozeBanner: { backgroundColor: '#F0F0F5' },
-  statusBannerText: { fontSize: 14, color: '#2C6E56', fontWeight: '500' },
-  statusTimestamp: { color: '#8A7F77', fontWeight: '400', fontSize: 13 },
+  waitingBanner: { backgroundColor: '#FFF5E0' },
+  snoozeBanner: { backgroundColor: '#ECEAFF' },
+  statusBannerText: { fontSize: 14, color: '#2DA89A', fontWeight: '500' },
+  statusTimestamp: { color: '#9B96B0', fontWeight: '400', fontSize: 13 },
   fields: {
     marginHorizontal: 20,
     backgroundColor: '#fff',
@@ -468,36 +468,36 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#EDE5DA',
+    borderColor: '#ECEAFF',
   },
   fieldRow: {
     flexDirection: 'row',
     paddingVertical: 13,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F5EDE4',
+    borderBottomColor: '#F0EEF8',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     gap: 12,
   },
-  fieldLabel: { fontSize: 14, color: '#8A7F77', fontWeight: '500', flex: 1 },
-  fieldValue: { fontSize: 14, color: '#2C2C2C', fontWeight: '500', flex: 2, textAlign: 'right' },
+  fieldLabel: { fontSize: 14, color: '#9B96B0', fontWeight: '500', flex: 1 },
+  fieldValue: { fontSize: 14, color: '#1A1826', fontWeight: '500', flex: 2, textAlign: 'right' },
   actionsSection: { paddingHorizontal: 20, marginBottom: 28 },
   sectionTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#8A7F77',
+    color: '#9B96B0',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 12,
   },
   waitingInput: {
     borderWidth: 1.5,
-    borderColor: '#D4845A',
+    borderColor: '#7C6FCD',
     borderRadius: 10,
     padding: 12,
     fontSize: 15,
-    color: '#2C2C2C',
+    color: '#1A1826',
     backgroundColor: '#fff',
     marginBottom: 10,
   },
@@ -506,38 +506,38 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: '45%',
     backgroundColor: '#fff',
-    borderRadius: 14,
+    borderRadius: 18,
     borderWidth: 1.5,
-    borderColor: '#EDE5DA',
+    borderColor: '#ECEAFF',
     padding: 14,
     alignItems: 'center',
     gap: 6,
   },
-  actionBtnPrimary: { backgroundColor: '#D4845A', borderColor: '#D4845A' },
-  actionBtnHighlight: { borderColor: '#D4845A', backgroundColor: '#FDF0E8' },
+  actionBtnPrimary: { backgroundColor: '#7C6FCD', borderColor: '#7C6FCD' },
+  actionBtnHighlight: { borderColor: '#7C6FCD', backgroundColor: '#EDE9FF' },
   actionBtnDisabled: { opacity: 0.4 },
   actionBtnEmoji: { fontSize: 22 },
-  actionBtnLabel: { fontSize: 13, fontWeight: '600', color: '#2C2C2C', textAlign: 'center' },
+  actionBtnLabel: { fontSize: 13, fontWeight: '600', color: '#1A1826', textAlign: 'center' },
   actionBtnLabelPrimary: { color: '#fff' },
   // Grocery shortcut
   grocerySection: { paddingHorizontal: 20, marginBottom: 24 },
   grocerySectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  groceryToggle: { fontSize: 14, color: '#5B9BD5', fontWeight: '600' },
+  groceryToggle: { fontSize: 14, color: '#7C6FCD', fontWeight: '600' },
   groceryInputRow: { flexDirection: 'row', gap: 8 },
   groceryInput: {
     flex: 1,
     borderWidth: 1.5,
-    borderColor: '#EDE5DA',
+    borderColor: '#ECEAFF',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#2C2C2C',
+    color: '#1A1826',
     backgroundColor: '#fff',
     height: 42,
   },
   groceryAddBtn: {
-    backgroundColor: '#5B9BD5',
+    backgroundColor: '#7C6FCD',
     borderRadius: 10,
     paddingHorizontal: 14,
     height: 42,
@@ -545,5 +545,5 @@ const styles = StyleSheet.create({
   },
   groceryAddBtnDisabled: { opacity: 0.4 },
   groceryAddBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
-  groceryConfirm: { marginTop: 8, fontSize: 13, color: '#5A9E8A', fontWeight: '600' },
+  groceryConfirm: { marginTop: 8, fontSize: 13, color: '#5CC8BD', fontWeight: '600' },
 });
