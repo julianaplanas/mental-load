@@ -8,9 +8,13 @@ function formatTime(ts: string): string {
   });
 }
 
-const USER_COLOR: Record<string, string> = {
-  juli: 'var(--juli)',
-  gino: 'var(--gino)',
+const USER_BG: Record<string, string> = {
+  juli: '#FFE5EE',
+  gino: '#E5F8F4',
+};
+const USER_ACCENT: Record<string, string> = {
+  juli: '#FF6B8A',
+  gino: '#4DBFA0',
 };
 
 interface Props {
@@ -45,29 +49,32 @@ export function CommentsSection({ cardId, comments, currentUserId, onUpdate }: P
 
   return (
     <div style={{ marginBottom: 24 }}>
-      <p style={{ fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.5, margin: '0 0 12px' }}>
+      <p style={{ fontSize: 11, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 1, margin: '0 0 12px' }}>
         Comments
       </p>
 
       {sorted.length === 0 ? (
-        <p style={{ fontSize: 14, color: 'var(--light-muted)', fontStyle: 'italic', margin: '0 0 12px' }}>
+        <p style={{ fontSize: 14, color: 'var(--muted)', fontWeight: 600, margin: '0 0 12px' }}>
           No comments yet. Be the first!
         </p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 14 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
           {sorted.map((c) => (
             <div key={c.id} style={{
-              background: 'var(--surface)', borderRadius: 16, padding: '10px 14px',
-              border: '2px solid var(--border)',
-              borderLeft: `4px solid ${USER_COLOR[c.user_id] ?? 'var(--primary)'}`,
+              background: USER_BG[c.user_id] ?? '#F5F2EC',
+              borderRadius: 8,
+              padding: '10px 14px',
+              border: '2px solid var(--ink)',
+              borderLeft: `4px solid ${USER_ACCENT[c.user_id] ?? 'var(--ink)'}`,
+              boxShadow: '2px 2px 0 var(--ink)',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: USER_COLOR[c.user_id] ?? 'var(--primary)' }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                   {c.user_id === 'juli' ? 'Juli' : 'Gino'}
                 </span>
-                <span style={{ fontSize: 12, color: 'var(--light-muted)' }}>{formatTime(c.created_at)}</span>
+                <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>{formatTime(c.created_at)}</span>
               </div>
-              <p style={{ fontSize: 14, color: 'var(--text)', margin: 0, lineHeight: 1.5 }}>{c.text}</p>
+              <p style={{ fontSize: 14, color: 'var(--text)', margin: 0, lineHeight: 1.5, fontWeight: 500 }}>{c.text}</p>
             </div>
           ))}
         </div>
@@ -76,28 +83,27 @@ export function CommentsSection({ cardId, comments, currentUserId, onUpdate }: P
       <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
         <textarea
           style={{
-            flex: 1, border: '2px solid var(--border)', borderRadius: 16, padding: '10px 14px',
-            fontSize: 16, color: 'var(--text)', background: 'var(--surface)', resize: 'none',
+            flex: 1, border: '2px solid var(--ink)', borderRadius: 8, padding: '10px 14px',
+            fontSize: 15, fontWeight: 500, color: 'var(--text)', background: 'var(--surface)', resize: 'none',
             minHeight: 42, maxHeight: 100, fontFamily: 'inherit',
-            transition: 'border-color 0.2s ease',
           }}
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Add a comment..."
           rows={2}
-          onFocus={(e) => { (e.target as HTMLElement).style.borderColor = 'var(--primary)'; }}
-          onBlur={(e) => { (e.target as HTMLElement).style.borderColor = 'var(--border)'; }}
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
         />
         <button
           onClick={handleSend}
           disabled={!text.trim() || sending}
           style={{
-            background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 50,
-            padding: '10px 16px', fontSize: 14, fontWeight: 700, cursor: 'pointer',
-            height: 42, opacity: (!text.trim() || sending) ? 0.4 : 1,
+            background: 'var(--primary)', color: 'var(--ink)', border: '2px solid var(--ink)', borderRadius: 8,
+            padding: '10px 16px', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+            height: 44, opacity: (!text.trim() || sending) ? 0.4 : 1,
             fontFamily: 'var(--font-display)',
-            boxShadow: '0 3px 0px #C45A30',
+            boxShadow: '2px 2px 0 var(--ink)',
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
           }}
         >
           Send

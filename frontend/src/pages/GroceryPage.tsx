@@ -135,13 +135,14 @@ export default function GroceryPage() {
       {/* Header */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '16px 20px 12px', borderBottom: '1px solid var(--border)', flexShrink: 0,
+        padding: '16px 20px 12px', borderBottom: '2px solid var(--ink)', flexShrink: 0,
+        background: 'var(--bg)',
       }}>
-        <h1 style={{ fontSize: 28, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)', margin: 0 }}>Groceries</h1>
+        <h1 style={{ fontSize: 26, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)', margin: 0, letterSpacing: -0.5, textTransform: 'uppercase' }}>🛒 Groceries</h1>
         {hasChecked && (
           <button
             onClick={handleClearChecked}
-            style={{ background: 'var(--primary-light)', border: 'none', borderRadius: 50, padding: '6px 14px', fontSize: 13, fontWeight: 700, color: 'var(--primary)', cursor: 'pointer', fontFamily: 'var(--font-display)' }}
+            style={{ background: 'var(--primary)', border: '2px solid var(--ink)', borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 700, color: 'var(--ink)', cursor: 'pointer', boxShadow: '2px 2px 0 var(--ink)', textTransform: 'uppercase', letterSpacing: 0.5 }}
           >
             Clear ✓
           </button>
@@ -157,14 +158,14 @@ export default function GroceryPage() {
         ) : groups.length === 0 && !hasChecked ? (
           <div style={{ textAlign: 'center', paddingTop: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 48, animation: 'float 3s ease-in-out infinite' }}>🛒</span>
-            <p style={{ fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--text)', margin: 0 }}>List is empty</p>
-            <p style={{ fontSize: 14, color: 'var(--muted)', margin: 0 }}>Add your first item below.</p>
+            <p style={{ fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)', margin: 0, letterSpacing: -0.3, textTransform: 'uppercase' }}>List is empty</p>
+            <p style={{ fontSize: 14, color: 'var(--muted)', margin: 0, fontWeight: 600 }}>Add your first item below.</p>
           </div>
         ) : (
           <div style={{ paddingTop: 8, paddingBottom: 8 }}>
             {groups.map((group) => (
               <div key={group.key} style={{ marginBottom: 4 }}>
-                <p style={{ fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--muted)', padding: '10px 20px', textTransform: 'uppercase', letterSpacing: 0.5, margin: 0 }}>
+                <p style={{ fontSize: 10, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--muted)', padding: '10px 20px', textTransform: 'uppercase', letterSpacing: 1.2, margin: 0 }}>
                   {group.emoji} {group.label}
                 </p>
                 {group.items.map((item) => (
@@ -174,7 +175,7 @@ export default function GroceryPage() {
             ))}
             {hasChecked && (
               <div style={{ marginBottom: 4 }}>
-                <p style={{ fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--light-muted)', padding: '10px 20px', textTransform: 'uppercase', letterSpacing: 0.5, margin: 0 }}>
+                <p style={{ fontSize: 10, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--light-muted)', padding: '10px 20px', textTransform: 'uppercase', letterSpacing: 1.2, margin: 0 }}>
                   ✓ In the basket
                 </p>
                 {checked.map((item) => (
@@ -187,7 +188,7 @@ export default function GroceryPage() {
       </div>
 
       {/* Add bar */}
-      <div style={{ background: 'var(--surface)', borderTop: '1px solid var(--border)', flexShrink: 0 }}>
+      <div style={{ background: 'var(--surface)', borderTop: '2px solid var(--ink)', flexShrink: 0 }}>
         {/* Category chips — always visible */}
         <div style={{ padding: '10px 12px 6px', display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 8 }}>
           {CATEGORIES.map((cat) => (
@@ -195,13 +196,16 @@ export default function GroceryPage() {
               key={cat.key}
               onClick={() => setNewCat(newCat === cat.key ? null : cat.key)}
               style={{
-                padding: '6px 13px', borderRadius: 50, whiteSpace: 'nowrap', cursor: 'pointer',
-                border: `1.5px solid ${newCat === cat.key ? 'var(--primary)' : 'var(--border)'}`,
-                background: newCat === cat.key ? 'var(--primary-light)' : 'transparent',
-                fontSize: 12, fontWeight: newCat === cat.key ? 700 : 500,
-                color: newCat === cat.key ? 'var(--primary)' : 'var(--muted)',
-                transition: 'all 0.2s var(--ease-spring)',
+                padding: '5px 12px', borderRadius: 6, whiteSpace: 'nowrap', cursor: 'pointer',
+                border: `2px solid ${newCat === cat.key ? 'var(--ink)' : 'var(--border-soft)'}`,
+                background: newCat === cat.key ? 'var(--primary)' : 'transparent',
+                fontSize: 11, fontWeight: 700,
+                color: newCat === cat.key ? 'var(--ink)' : 'var(--muted)',
+                boxShadow: newCat === cat.key ? '2px 2px 0 var(--ink)' : 'none',
+                transition: 'all 0.1s ease',
                 flexShrink: 0,
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
               }}
             >
               {cat.emoji} {cat.label}
@@ -217,7 +221,7 @@ export default function GroceryPage() {
               value={newQty}
               onChange={(e) => setNewQty(e.target.value)}
               placeholder="Quantity (e.g. x2)"
-              style={{ border: '1.5px solid var(--border)', borderRadius: 50, padding: '8px 14px', fontSize: 15, color: 'var(--text)', background: 'var(--bg)', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit' }}
+              style={{ border: '2px solid var(--ink)', borderRadius: 8, padding: '8px 14px', fontSize: 15, fontWeight: 500, color: 'var(--text)', background: 'var(--bg)', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit' }}
             />
           </div>
         )}
@@ -230,18 +234,18 @@ export default function GroceryPage() {
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Add an item..."
             onKeyDown={(e) => { if (e.key === 'Enter') handleAdd(); }}
-            style={{ flex: 1, border: '1.5px solid var(--border)', borderRadius: 50, padding: '10px 16px', fontSize: 16, color: 'var(--text)', background: 'var(--bg)', height: 44, boxSizing: 'border-box', fontFamily: 'inherit' }}
+            style={{ flex: 1, border: '2px solid var(--ink)', borderRadius: 8, padding: '10px 16px', fontSize: 15, fontWeight: 500, color: 'var(--text)', background: 'var(--bg)', height: 44, boxSizing: 'border-box', fontFamily: 'inherit' }}
           />
           <button
             onClick={() => setShowExpanded((v) => !v)}
-            style={{ width: 36, height: 36, borderRadius: 18, background: 'var(--primary-light)', border: 'none', fontSize: 13, color: 'var(--primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}
+            style={{ width: 36, height: 36, borderRadius: 6, background: 'var(--surface)', border: '2px solid var(--ink)', fontSize: 12, color: 'var(--ink)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}
           >
             {showExpanded ? '▼' : '▲'}
           </button>
           <button
             onClick={handleAdd}
             disabled={!newName.trim() || adding}
-            style={{ background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 50, padding: '0 18px', height: 44, fontSize: 15, fontWeight: 700, cursor: 'pointer', opacity: (!newName.trim() || adding) ? 0.4 : 1, fontFamily: 'var(--font-body)', boxShadow: 'var(--shadow-btn)' }}
+            style={{ background: 'var(--primary)', color: 'var(--ink)', border: '2px solid var(--ink)', borderRadius: 8, padding: '0 18px', height: 44, fontSize: 14, fontWeight: 700, cursor: 'pointer', opacity: (!newName.trim() || adding) ? 0.4 : 1, fontFamily: 'var(--font-body)', boxShadow: '2px 2px 0 var(--ink)', textTransform: 'uppercase', letterSpacing: 0.5 }}
           >
             Add
           </button>
@@ -262,23 +266,24 @@ export default function GroceryPage() {
 function ItemRow({ item, onToggle, onDelete }: { item: GroceryItem; onToggle: (i: GroceryItem) => void; onDelete: (i: GroceryItem) => void }) {
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', padding: '13px 16px',
-      margin: '0 16px 4px',
+      display: 'flex', alignItems: 'center', padding: '12px 16px',
+      margin: '0 14px 6px',
       background: item.is_checked ? 'var(--surface-warm)' : 'var(--surface)',
-      borderRadius: 18,
-      boxShadow: item.is_checked ? 'none' : 'var(--shadow-card)',
-      transition: 'all 0.2s ease',
-      opacity: item.is_checked ? 0.65 : 1,
+      borderRadius: 10,
+      border: '2px solid var(--ink)',
+      boxShadow: item.is_checked ? '1px 1px 0px var(--ink)' : 'var(--shadow-card)',
+      transition: 'all 0.15s ease',
+      opacity: item.is_checked ? 0.6 : 1,
     }}>
       <button
         onClick={() => onToggle(item)}
         style={{
-          width: 26, height: 26, borderRadius: 13, flexShrink: 0,
-          border: `2px solid ${item.is_checked ? 'var(--sage)' : 'var(--primary)'}`,
-          background: item.is_checked ? 'var(--sage)' : 'transparent',
+          width: 26, height: 26, borderRadius: 6, flexShrink: 0,
+          border: `2px solid ${item.is_checked ? 'var(--green)' : 'var(--ink)'}`,
+          background: item.is_checked ? 'var(--green)' : 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', marginRight: 14,
-          transition: 'all 0.2s var(--ease-spring)',
+          cursor: 'pointer', marginRight: 12,
+          transition: 'all 0.15s ease',
         }}
       >
         {item.is_checked && (
@@ -287,23 +292,22 @@ function ItemRow({ item, onToggle, onDelete }: { item: GroceryItem; onToggle: (i
       </button>
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{
-          fontSize: 16, fontWeight: 600,
+          fontSize: 15, fontWeight: 700,
           color: item.is_checked ? 'var(--muted)' : 'var(--text)',
           margin: 0,
           textDecoration: item.is_checked ? 'line-through' : 'none',
-          textDecorationColor: 'var(--light-muted)',
         }}>
           {item.name}
         </p>
         {item.quantity && (
-          <p style={{ fontSize: 12, color: 'var(--muted)', margin: '2px 0 0', fontStyle: 'italic' }}>
+          <p style={{ fontSize: 12, color: 'var(--muted)', margin: '2px 0 0', fontWeight: 600 }}>
             {item.quantity}
           </p>
         )}
       </div>
       <button
         onClick={() => onDelete(item)}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, color: 'var(--light-muted)', padding: 0, lineHeight: 1, marginLeft: 12, flexShrink: 0 }}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, color: 'var(--muted)', padding: 0, lineHeight: 1, marginLeft: 10, flexShrink: 0, fontWeight: 700 }}
       >
         ×
       </button>

@@ -37,7 +37,7 @@ export function ReactionsSection({ cardId, reactions, currentUserId, onUpdate }:
 
   return (
     <div style={{ marginBottom: 28 }}>
-      <p style={{ fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.5, margin: '0 0 12px' }}>
+      <p style={{ fontSize: 11, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 1, margin: '0 0 12px' }}>
         Reactions
       </p>
 
@@ -50,14 +50,14 @@ export function ReactionsSection({ cardId, reactions, currentUserId, onUpdate }:
               onClick={() => handleEmojiPress(emoji)}
               disabled={loading}
               style={{
-                width: 48, height: 48, borderRadius: 16,
-                background: isSelected ? 'var(--primary-light)' : 'var(--surface)',
-                border: `2px solid ${isSelected ? 'var(--primary)' : 'var(--border)'}`,
-                fontSize: 24, cursor: 'pointer', display: 'flex',
+                width: 48, height: 48, borderRadius: 8,
+                background: isSelected ? 'var(--primary)' : 'var(--surface)',
+                border: `2px solid var(--ink)`,
+                fontSize: 22, cursor: 'pointer', display: 'flex',
                 alignItems: 'center', justifyContent: 'center',
-                boxShadow: isSelected ? '0 3px 0px var(--primary-soft)' : '0 3px 0px var(--border)',
-                transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                transform: isSelected ? 'scale(1.08)' : 'scale(1)',
+                boxShadow: isSelected ? '3px 3px 0 var(--ink)' : '2px 2px 0 var(--ink)',
+                transition: 'all 0.1s ease',
+                transform: isSelected ? 'translate(-1px, -1px)' : 'none',
               }}
             >
               {emoji}
@@ -67,14 +67,14 @@ export function ReactionsSection({ cardId, reactions, currentUserId, onUpdate }:
       </div>
 
       {(myReaction || otherReaction) && (
-        <div style={{ display: 'flex', gap: 16, marginTop: 10 }}>
+        <div style={{ display: 'flex', gap: 14, marginTop: 10 }}>
           {myReaction && (
-            <span style={{ fontSize: 14, color: 'var(--text-soft)', fontWeight: 600 }}>
+            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 700, background: 'var(--primary-light)', border: '1.5px solid var(--ink)', borderRadius: 6, padding: '2px 8px' }}>
               You: {myReaction.emoji}
             </span>
           )}
           {otherReaction && (
-            <span style={{ fontSize: 14, color: 'var(--text-soft)', fontWeight: 600 }}>
+            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 700, background: 'var(--border-soft)', border: '1.5px solid var(--ink)', borderRadius: 6, padding: '2px 8px' }}>
               {otherName}: {otherReaction.emoji}
             </span>
           )}

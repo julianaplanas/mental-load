@@ -19,15 +19,14 @@ export default function TabBar() {
             key={tab.path}
             className={`tab-item ${active ? 'active' : ''}`}
             onClick={() => navigate(tab.path)}
-            style={{ fontFamily: 'var(--font-display)' }}
           >
             <span className="tab-item-icon" style={{
-              fontSize: tab.icon === '✓' ? 24 : tab.icon === '◎' ? 20 : 22,
-              fontWeight: 800,
+              fontSize: tab.icon === '✓' ? 22 : tab.icon === '◎' ? 18 : 20,
+              fontWeight: 900,
             }}>
               {tab.icon}
             </span>
-            <span style={{ fontSize: 11, letterSpacing: 0.3 }}>{tab.label}</span>
+            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase' }}>{tab.label}</span>
           </button>
         );
       })}

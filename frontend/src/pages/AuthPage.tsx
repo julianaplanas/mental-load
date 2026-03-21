@@ -11,15 +11,15 @@ const USERS: {
     id: 'juli',
     name: 'Juli',
     emoji: '🌸',
-    bg: 'linear-gradient(135deg, #D4849A 0%, #C06080 100%)',
-    shadow: '#A04060',
+    bg: '#FF6B8A',
+    shadow: '#C0003A',
   },
   {
     id: 'gino',
     name: 'Gino',
     emoji: '🌿',
-    bg: 'linear-gradient(135deg, #82B09A 0%, #5A9080 100%)',
-    shadow: '#3A7060',
+    bg: '#C8FF00',
+    shadow: '#7DB000',
   },
 ];
 
@@ -31,7 +31,7 @@ export default function AuthPage({ onSignIn }: Props) {
   return (
     <div style={{
       minHeight: '100dvh',
-      background: 'var(--bg)',
+      background: '#F5F2EC',
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',
@@ -40,52 +40,49 @@ export default function AuthPage({ onSignIn }: Props) {
 
       {/* Hero */}
       <div style={{
-        background: 'linear-gradient(160deg, #8B8FD4 0%, #A882C8 55%, #D4849A 100%)',
-        padding: '72px 36px 56px',
+        background: '#0F0F0F',
+        padding: '64px 32px 56px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
-        gap: 6,
+        gap: 8,
         position: 'relative',
         overflow: 'hidden',
+        borderBottom: '3px solid #0F0F0F',
       }}>
-        {/* Decorative blob */}
+        {/* Lime accent block */}
         <div style={{
-          position: 'absolute', top: -40, right: -40,
-          width: 180, height: 180,
-          background: 'rgba(255,255,255,0.10)',
-          borderRadius: '60% 40% 70% 30% / 50% 60% 40% 50%',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: -20, right: 40,
-          width: 100, height: 100,
-          background: 'rgba(255,255,255,0.07)',
-          borderRadius: '40% 60% 30% 70% / 60% 40% 70% 30%',
+          position: 'absolute', top: -20, right: -20,
+          width: 160, height: 160,
+          background: '#C8FF00',
+          borderRadius: 12,
+          transform: 'rotate(15deg)',
+          opacity: 0.15,
         }} />
 
         <p style={{
-          fontSize: 76,
+          fontSize: 88,
           fontFamily: 'var(--font-display)',
           fontWeight: 700,
-          fontStyle: 'italic',
-          color: '#fff',
-          letterSpacing: -3,
+          color: '#C8FF00',
+          letterSpacing: -5,
           margin: 0,
-          lineHeight: 0.9,
+          lineHeight: 0.85,
           animation: 'bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
           position: 'relative',
         }}>
           noi
         </p>
         <p style={{
-          fontSize: 16,
+          fontSize: 14,
           fontFamily: 'var(--font-body)',
-          fontStyle: 'italic',
-          color: 'rgba(255,255,255,0.80)',
+          fontWeight: 600,
+          color: 'rgba(255,255,255,0.55)',
           margin: 0,
           animation: 'fadeIn 0.5s ease 0.2s both',
           position: 'relative',
-          fontWeight: 300,
+          letterSpacing: 1,
+          textTransform: 'uppercase',
         }}>
           our shared mental load
         </p>
@@ -94,21 +91,21 @@ export default function AuthPage({ onSignIn }: Props) {
       {/* Selector */}
       <div style={{
         flex: 1,
-        padding: '40px 28px 48px',
+        padding: '40px 24px 48px',
         display: 'flex',
         flexDirection: 'column',
-        gap: 14,
+        gap: 16,
         justifyContent: 'center',
       }}>
         <p style={{
           fontFamily: 'var(--font-display)',
-          fontSize: 24,
-          fontWeight: 600,
-          fontStyle: 'italic',
-          color: 'var(--text)',
-          margin: '0 0 10px',
+          fontSize: 22,
+          fontWeight: 700,
+          color: '#0F0F0F',
+          margin: '0 0 8px',
           animation: 'fadeIn 0.5s ease 0.25s both',
-          lineHeight: 1.2,
+          letterSpacing: -0.5,
+          textTransform: 'uppercase',
         }}>
           Who's here?
         </p>
@@ -120,39 +117,47 @@ export default function AuthPage({ onSignIn }: Props) {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 18,
+              gap: 20,
               padding: '22px 28px',
-              borderRadius: 22,
-              border: 'none',
+              borderRadius: 12,
+              border: '2px solid #0F0F0F',
               background: user.bg,
               cursor: 'pointer',
-              boxShadow: `0 6px 0px ${user.shadow}`,
+              boxShadow: `4px 4px 0px #0F0F0F`,
               transition: 'transform 0.1s ease, box-shadow 0.1s ease',
               animation: `bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${0.35 + i * 0.12}s both`,
             }}
             onMouseDown={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = 'translateY(5px)';
-              (e.currentTarget as HTMLElement).style.boxShadow = `0 1px 0px ${user.shadow}`;
+              (e.currentTarget as HTMLElement).style.transform = 'translate(4px, 4px)';
+              (e.currentTarget as HTMLElement).style.boxShadow = '0 0 0px #0F0F0F';
             }}
             onMouseUp={(e) => {
               (e.currentTarget as HTMLElement).style.transform = '';
-              (e.currentTarget as HTMLElement).style.boxShadow = `0 6px 0px ${user.shadow}`;
+              (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0px #0F0F0F';
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLElement).style.transform = '';
-              (e.currentTarget as HTMLElement).style.boxShadow = `0 6px 0px ${user.shadow}`;
+              (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0px #0F0F0F';
+            }}
+            onTouchStart={(e) => {
+              (e.currentTarget as HTMLElement).style.transform = 'translate(4px, 4px)';
+              (e.currentTarget as HTMLElement).style.boxShadow = '0 0 0px #0F0F0F';
+            }}
+            onTouchEnd={(e) => {
+              (e.currentTarget as HTMLElement).style.transform = '';
+              (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0px #0F0F0F';
             }}
           >
-            <span style={{ fontSize: 36 }}>{user.emoji}</span>
+            <span style={{ fontSize: 40 }}>{user.emoji}</span>
             <div>
               <p style={{
-                fontSize: 22,
+                fontSize: 24,
                 fontFamily: 'var(--font-display)',
-                fontWeight: 600,
-                fontStyle: 'italic',
-                color: '#fff',
+                fontWeight: 700,
+                color: '#0F0F0F',
                 margin: 0,
                 lineHeight: 1,
+                letterSpacing: -0.5,
               }}>
                 I'm {user.name}
               </p>
@@ -165,9 +170,9 @@ export default function AuthPage({ onSignIn }: Props) {
           fontSize: 12,
           color: 'var(--light-muted)',
           lineHeight: 1.7,
-          margin: '16px 0 0',
-          fontStyle: 'italic',
-          animation: 'fadeIn 0.5s ease 0.6s both',
+          margin: '8px 0 0',
+          fontWeight: 600,
+          letterSpacing: 0.3,
         }}>
           Saved on this device — you won't be asked again.
         </p>

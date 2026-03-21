@@ -13,46 +13,46 @@ const TIMELINES: { value: Timeline; label: string }[] = [
   { value: 'custom', label: 'Custom date' },
 ];
 
-const ASSIGNMENTS: { value: AssignedTo; label: string; color?: string }[] = [
+const ASSIGNMENTS: { value: AssignedTo; label: string }[] = [
   { value: 'either', label: 'Either of us' },
-  { value: 'juli', label: 'Juli', color: 'var(--juli)' },
-  { value: 'gino', label: 'Gino', color: 'var(--gino)' },
-  { value: 'together', label: 'Together', color: 'var(--accent)' },
+  { value: 'juli', label: '🌸 Juli' },
+  { value: 'gino', label: '🌿 Gino' },
+  { value: 'together', label: '🤝 Together' },
 ];
 
 const PRIORITIES: { value: Priority; label: string }[] = [
-  { value: 'urgent', label: '🔴 Urgent' },
-  { value: 'normal', label: '⚪ Normal' },
-  { value: 'low', label: '🟢 Low' },
+  { value: 'urgent', label: '🔥 Urgent' },
+  { value: 'normal', label: '· Normal' },
+  { value: 'low', label: '↓ Low' },
 ];
 
 const FREQUENCIES: { value: RecurringFrequency; label: string }[] = [
   { value: 'daily', label: 'Daily' },
   { value: 'weekly', label: 'Weekly' },
-  { value: 'biweekly', label: 'Every 2 weeks' },
+  { value: 'biweekly', label: 'Every 2 wks' },
   { value: 'monthly', label: 'Monthly' },
 ];
 
 function Chips<T extends string>({
   options, value, onChange,
-}: { options: { value: T; label: string; color?: string }[]; value: T; onChange: (v: T) => void }) {
+}: { options: { value: T; label: string }[]; value: T; onChange: (v: T) => void }) {
   return (
     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
       {options.map((opt) => {
         const active = value === opt.value;
-        const activeColor = opt.color ?? 'var(--primary)';
         return (
           <button
             key={opt.value}
             onClick={() => onChange(opt.value)}
             style={{
-              padding: '8px 16px', borderRadius: 50, cursor: 'pointer', fontSize: 14,
-              border: `2px solid ${active ? activeColor : 'var(--border)'}`,
-              background: active ? (opt.color ? `${opt.color}18` : 'var(--primary-light)') : 'var(--surface)',
-              color: active ? activeColor : 'var(--muted)',
-              fontWeight: active ? 700 : 600,
-              transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-              transform: active ? 'scale(1.03)' : 'scale(1)',
+              padding: '8px 14px', borderRadius: 8, cursor: 'pointer', fontSize: 13,
+              border: `2px solid ${active ? 'var(--ink)' : 'var(--border-soft)'}`,
+              background: active ? 'var(--primary)' : 'var(--surface)',
+              color: active ? 'var(--ink)' : 'var(--muted)',
+              fontWeight: 700,
+              boxShadow: active ? '2px 2px 0 var(--ink)' : 'none',
+              transition: 'all 0.1s ease',
+              letterSpacing: 0.2,
             }}
           >
             {opt.label}
@@ -64,9 +64,9 @@ function Chips<T extends string>({
 }
 
 const inputStyle: React.CSSProperties = {
-  width: '100%', border: '2px solid var(--border)', borderRadius: 14, padding: 12,
-  fontSize: 16, color: 'var(--text)', background: 'var(--surface)', boxSizing: 'border-box', fontFamily: 'inherit',
-  transition: 'border-color 0.2s ease',
+  width: '100%', border: '2px solid var(--ink)', borderRadius: 8, padding: 12,
+  fontSize: 15, fontWeight: 500, color: 'var(--text)', background: 'var(--surface)', boxSizing: 'border-box', fontFamily: 'inherit',
+  transition: 'box-shadow 0.1s ease',
 };
 
 export default function CardFormPage() {
@@ -168,25 +168,25 @@ export default function CardFormPage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg)' }}>
       {/* Nav */}
-      <div className="nav-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', fontSize: 16, color: 'var(--muted)', cursor: 'pointer', padding: 0, fontWeight: 600 }}>Cancel</button>
-        <span style={{ fontSize: 17, fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--text)' }}>{isEdit ? 'Edit Task' : 'New Task'}</span>
+      <div className="nav-bar">
+        <button onClick={() => navigate(-1)} style={{ fontSize: 14, color: 'var(--muted)', cursor: 'pointer', padding: 0, fontWeight: 700, letterSpacing: 0.3, textTransform: 'uppercase' }}>Cancel</button>
+        <span style={{ fontSize: 15, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)', textTransform: 'uppercase', letterSpacing: 0.5 }}>{isEdit ? 'Edit Task' : 'New Task'}</span>
         <button
           onClick={handleSubmit}
           disabled={submitting}
-          style={{ background: 'var(--primary)', border: 'none', borderRadius: 50, padding: '8px 16px', fontSize: 14, fontFamily: 'var(--font-display)', fontWeight: 600, color: '#fff', cursor: 'pointer', opacity: submitting ? 0.5 : 1, boxShadow: '0 3px 0px #C45A30' }}
+          style={{ background: 'var(--primary)', border: '2px solid var(--ink)', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--ink)', cursor: 'pointer', opacity: submitting ? 0.5 : 1, boxShadow: '2px 2px 0 var(--ink)', textTransform: 'uppercase', letterSpacing: 0.3 }}
         >
-          {submitting ? (isEdit ? 'Saving...' : 'Adding...') : (isEdit ? 'Save' : 'Add Task')}
+          {submitting ? (isEdit ? 'Saving...' : 'Adding...') : (isEdit ? 'Save' : 'Add')}
         </button>
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {/* Title */}
-        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '2px solid var(--border-soft)', background: 'var(--surface)' }}>
           <textarea
-            style={{ width: '100%', fontSize: 22, fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--text)', lineHeight: 1.35, minHeight: 60, border: 'none', outline: 'none', resize: 'none', background: 'transparent', boxSizing: 'border-box' }}
+            style={{ width: '100%', fontSize: 22, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, minHeight: 60, border: 'none', outline: 'none', resize: 'none', background: 'transparent', boxSizing: 'border-box', letterSpacing: -0.3 }}
             placeholder="What needs to be done?"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -216,12 +216,13 @@ export default function CardFormPage() {
                 key={t.name}
                 onClick={() => { setTag(tag === t.name ? null : t.name); setShowCustomTagInput(false); }}
                 style={{
-                  padding: '8px 14px', borderRadius: 50, whiteSpace: 'nowrap', cursor: 'pointer', fontSize: 13,
-                  border: `2px solid ${tag === t.name ? 'var(--primary)' : 'var(--border)'}`,
-                  background: tag === t.name ? 'var(--primary-light)' : 'var(--surface)',
-                  color: tag === t.name ? 'var(--primary)' : 'var(--muted)',
-                  fontWeight: tag === t.name ? 700 : 600,
-                  transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  padding: '7px 12px', borderRadius: 8, whiteSpace: 'nowrap', cursor: 'pointer', fontSize: 12,
+                  border: `2px solid ${tag === t.name ? 'var(--ink)' : 'var(--border-soft)'}`,
+                  background: tag === t.name ? 'var(--primary)' : 'var(--surface)',
+                  color: tag === t.name ? 'var(--ink)' : 'var(--muted)',
+                  fontWeight: 700,
+                  boxShadow: tag === t.name ? '2px 2px 0 var(--ink)' : 'none',
+                  transition: 'all 0.1s ease',
                 }}
               >
                 {t.emoji} {t.name}
@@ -230,7 +231,7 @@ export default function CardFormPage() {
             {isCustomTag && (
               <button
                 onClick={() => setTag(null)}
-                style={{ padding: '8px 14px', borderRadius: 50, whiteSpace: 'nowrap', cursor: 'pointer', fontSize: 13, border: '2px solid var(--primary)', background: 'var(--primary-light)', color: 'var(--primary)', fontWeight: 700 }}
+                style={{ padding: '7px 12px', borderRadius: 8, whiteSpace: 'nowrap', cursor: 'pointer', fontSize: 12, border: '2px solid var(--ink)', background: 'var(--primary)', color: 'var(--ink)', fontWeight: 700, boxShadow: '2px 2px 0 var(--ink)' }}
               >
                 🏷️ {tag} ✕
               </button>
@@ -239,11 +240,12 @@ export default function CardFormPage() {
               <button
                 onClick={() => { setTag(null); setShowCustomTagInput((v) => !v); }}
                 style={{
-                  padding: '8px 14px', borderRadius: 50, whiteSpace: 'nowrap', cursor: 'pointer', fontSize: 13,
-                  border: `2px solid ${showCustomTagInput ? 'var(--primary)' : 'var(--border)'}`,
-                  background: showCustomTagInput ? 'var(--primary-light)' : 'var(--surface)',
-                  color: showCustomTagInput ? 'var(--primary)' : 'var(--muted)',
-                  fontWeight: showCustomTagInput ? 700 : 600,
+                  padding: '7px 12px', borderRadius: 8, whiteSpace: 'nowrap', cursor: 'pointer', fontSize: 12,
+                  border: `2px solid ${showCustomTagInput ? 'var(--ink)' : 'var(--border-soft)'}`,
+                  background: showCustomTagInput ? 'var(--primary)' : 'var(--surface)',
+                  color: showCustomTagInput ? 'var(--ink)' : 'var(--muted)',
+                  fontWeight: 700,
+                  boxShadow: showCustomTagInput ? '2px 2px 0 var(--ink)' : 'none',
                 }}
               >
                 ＋ Custom
@@ -254,7 +256,7 @@ export default function CardFormPage() {
             <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
               <input
                 type="text"
-                style={{ ...inputStyle, flex: 1, borderColor: 'var(--primary)' }}
+                style={{ ...inputStyle, flex: 1 }}
                 placeholder="e.g. Garden, Car..."
                 value={customTagInput}
                 onChange={(e) => setCustomTagInput(e.target.value)}
@@ -264,7 +266,7 @@ export default function CardFormPage() {
               <button
                 onClick={handleConfirmCustomTag}
                 disabled={!customTagInput.trim()}
-                style={{ background: 'var(--primary)', border: 'none', borderRadius: 50, padding: '0 18px', color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer', opacity: !customTagInput.trim() ? 0.4 : 1, fontFamily: 'var(--font-display)', boxShadow: '0 3px 0px #C45A30' }}
+                style={{ background: 'var(--primary)', border: '2px solid var(--ink)', borderRadius: 8, padding: '0 16px', color: 'var(--ink)', fontWeight: 700, fontSize: 14, cursor: 'pointer', opacity: !customTagInput.trim() ? 0.4 : 1, fontFamily: 'var(--font-display)', boxShadow: '2px 2px 0 var(--ink)' }}
               >
                 Add
               </button>
@@ -285,12 +287,15 @@ export default function CardFormPage() {
               <input type="checkbox" checked={isRecurring} onChange={(e) => setIsRecurring(e.target.checked)} style={{ opacity: 0, width: 0, height: 0 }} />
               <span style={{
                 position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                background: isRecurring ? 'var(--primary)' : 'var(--border)', borderRadius: 13, transition: '0.25s var(--ease-spring)',
+                background: isRecurring ? 'var(--primary)' : 'var(--border-soft)',
+                borderRadius: 4,
+                border: `2px solid ${isRecurring ? 'var(--ink)' : 'var(--border-soft)'}`,
+                transition: '0.2s ease',
               }} />
               <span style={{
-                position: 'absolute', top: 3, left: isRecurring ? 25 : 3, width: 20, height: 20,
-                background: '#fff', borderRadius: 10, transition: '0.25s var(--ease-spring)',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                position: 'absolute', top: 3, left: isRecurring ? 24 : 3, width: 18, height: 18,
+                background: isRecurring ? 'var(--ink)' : '#aaa',
+                borderRadius: 2, transition: '0.2s ease',
               }} />
             </label>
           </div>
@@ -300,7 +305,7 @@ export default function CardFormPage() {
         {/* Notes */}
         <FormSection label="Notes (optional)">
           <textarea
-            style={{ ...inputStyle, minHeight: 80, resize: 'vertical', borderRadius: 16 }}
+            style={{ ...inputStyle, minHeight: 80, resize: 'vertical', borderRadius: 8 }}
             placeholder="Any extra context..."
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
@@ -314,7 +319,7 @@ export default function CardFormPage() {
             <div style={{ display: 'flex', gap: 8 }}>
               <input
                 type="text"
-                style={{ ...inputStyle, flex: 1, fontSize: 16 }}
+                style={{ ...inputStyle, flex: 1, fontSize: 15 }}
                 placeholder="Add a step..."
                 value={subtaskInput}
                 onChange={(e) => setSubtaskInput(e.target.value)}
@@ -332,7 +337,7 @@ export default function CardFormPage() {
                   if (t) { setPendingSubtasks((prev) => [...prev, t]); setSubtaskInput(''); }
                 }}
                 disabled={!subtaskInput.trim()}
-                style={{ background: 'var(--primary)', border: 'none', borderRadius: 50, padding: '0 18px', color: '#fff', fontWeight: 700, fontSize: 18, cursor: 'pointer', opacity: !subtaskInput.trim() ? 0.4 : 1, flexShrink: 0, fontFamily: 'var(--font-display)', boxShadow: '0 3px 0px #C45A30' }}
+                style={{ background: 'var(--primary)', border: '2px solid var(--ink)', borderRadius: 8, padding: '0 18px', color: 'var(--ink)', fontWeight: 700, fontSize: 20, cursor: 'pointer', opacity: !subtaskInput.trim() ? 0.4 : 1, flexShrink: 0, fontFamily: 'var(--font-display)', boxShadow: '2px 2px 0 var(--ink)' }}
               >
                 +
               </button>
@@ -340,11 +345,11 @@ export default function CardFormPage() {
             {pendingSubtasks.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
                 {pendingSubtasks.map((t, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--surface-warm)', borderRadius: 14, padding: '8px 12px', border: '1px solid var(--border)' }}>
-                    <span style={{ flex: 1, fontSize: 14, color: 'var(--text)', fontWeight: 500 }}>{t}</span>
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--surface)', borderRadius: 8, padding: '8px 12px', border: '2px solid var(--border-soft)' }}>
+                    <span style={{ flex: 1, fontSize: 14, color: 'var(--text)', fontWeight: 600 }}>{t}</span>
                     <button
                       onClick={() => setPendingSubtasks((prev) => prev.filter((_, idx) => idx !== i))}
-                      style={{ color: 'var(--light-muted)', fontSize: 18, lineHeight: 1, padding: 0, background: 'none', border: 'none', cursor: 'pointer' }}
+                      style={{ color: 'var(--muted)', fontSize: 18, lineHeight: 1, padding: 0, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700 }}
                     >
                       ×
                     </button>
@@ -363,8 +368,8 @@ export default function CardFormPage() {
 
 function FormSection({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <p style={{ fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.5, margin: 0 }}>{label}</p>
+    <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border-soft)', background: 'var(--surface)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <p style={{ fontSize: 11, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 1, margin: 0 }}>{label}</p>
       {children}
     </div>
   );
