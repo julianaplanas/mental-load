@@ -236,24 +236,36 @@ router.patch('/:id', async (req, res) => {
       assigned_to && (assigned_to === 'juli' || assigned_to === 'gino') &&
       assigned_to !== old.assigned_to && assigned_to !== current_user_id
     ) {
-      await notifyOther(assigned_to, 'Task assigned to you', `${userName(current_user_id)} assigned you: "${updated.title}"`);
+      await notifyOther(current_user_id, 'Task assigned to you', `${userName(current_user_id)} assigned you: "${updated.title}"`);
     }
 
     // Auto-create next instance when a recurring task is completed
     if (status === 'done' && old.is_recurring && old.recurring_frequency) {
-      const nextDate = new Date();
+      const baseDate = old.custom_date ? new Date(old.custom_date) : new Date();
+      const nextDate = new Date(baseDate);
       const freq = old.recurring_frequency;
       if (freq === 'daily')    nextDate.setDate(nextDate.getDate() + 1);
       else if (freq === 'weekly')   nextDate.setDate(nextDate.getDate() + 7);
       else if (freq === 'biweekly') nextDate.setDate(nextDate.getDate() + 14);
       else if (freq === 'monthly')  nextDate.setMonth(nextDate.getMonth() + 1);
 
+      // If the calculated next date is in the past, advance from today instead
+      const now = new Date();
+      if (nextDate < now) {
+        nextDate.setTime(now.getTime());
+        if (freq === 'daily')    nextDate.setDate(nextDate.getDate() + 1);
+        else if (freq === 'weekly')   nextDate.setDate(nextDate.getDate() + 7);
+        else if (freq === 'biweekly') nextDate.setDate(nextDate.getDate() + 14);
+        else if (freq === 'monthly')  nextDate.setMonth(nextDate.getMonth() + 1);
+      }
+
       const nextDateStr = nextDate.toISOString().split('T')[0];
+      const nextTimeline = old.timeline === 'custom' || old.custom_date ? 'custom' : old.timeline || 'custom';
       const { rows: [next] } = await pool.query(`
         INSERT INTO cards (title, timeline, custom_date, assigned_to, tag, priority, is_recurring, recurring_frequency, notes, created_by)
-        VALUES ($1, 'custom', $2, $3, $4, $5, true, $6, $7, $8)
+        VALUES ($1, $2, $3, $4, $5, $6, true, $7, $8, $9)
         RETURNING *
-      `, [old.title, nextDateStr, old.assigned_to, old.tag, old.priority, old.recurring_frequency, old.notes, old.created_by]);
+      `, [old.title, nextTimeline, nextDateStr, old.assigned_to, old.tag, old.priority, old.recurring_frequency, old.notes, old.created_by]);
 
       req.app.get('io').emit('card:created', { ...next, reactions: [], comments: [], subtasks: [], subtask_count: 0, subtask_done_count: 0 });
     }

@@ -60,10 +60,11 @@ export function TimelineBadge({ card, small }: Props) {
     bg = '#6BA8E8';
   } else if (card.timeline === 'custom' && card.custom_date) {
     const d = parseLocalDate(card.custom_date);
-    label = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    const formatted = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    label = formatted === 'Invalid Date' ? 'No date' : formatted;
     bg = '#6BA8E8';
   } else {
-    label = card.timeline;
+    label = card.timeline === 'custom' ? 'No date' : (card.timeline ?? 'Pending');
     bg = '#9B96B0';
   }
 
