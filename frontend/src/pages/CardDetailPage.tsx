@@ -229,7 +229,7 @@ export default function CardDetailPage() {
 
         {/* Fields */}
         <div style={{ margin: '12px 20px 20px', background: 'var(--surface)', borderRadius: 10, border: '2px solid var(--ink)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
-          {card.assigned_to !== 'either' && <FieldRow label="Who" value={`👤 ${ASSIGNED_LABEL[card.assigned_to]}`} />}
+          <FieldRow label="Who" value={`👤 ${ASSIGNED_LABEL[card.assigned_to]}`} />
           {card.tag && <FieldRow label="Category" value={getTagDisplay(card.tag)} />}
           {card.is_recurring && card.recurring_frequency && <FieldRow label="Recurring" value={`🔁 ${FREQ_LABEL[card.recurring_frequency]}`} />}
           {card.notes && <FieldRow label="Notes" value={card.notes} />}
@@ -252,7 +252,7 @@ export default function CardDetailPage() {
           )}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
             <ActionBtn label={isOnItByMe ? 'Unclaim' : isOnItByOther ? `${statusUserName} is on it` : "I'm on it"} emoji={isOnItByMe ? '↩️' : '💪'} onClick={handleClaim} disabled={actionLoading} highlight={isOnItByMe} />
-            <ActionBtn label="Mark as Done" emoji="✅" onClick={handleDone} disabled={actionLoading || card.status === 'done'} primary />
+            <ActionBtn label="Mark as Done" emoji="✅" onClick={handleDone} disabled={actionLoading || card.status === 'done'} />
             <ActionBtn label={showWaitingInput ? 'Confirm' : 'Waiting on...'} emoji="⏳" onClick={handleWaiting} disabled={actionLoading} highlight={card.status === 'waiting'} />
             <ActionBtn label="Snooze" emoji="😴" onClick={handleSnooze} disabled={actionLoading} />
           </div>

@@ -236,38 +236,60 @@ router.patch('/:id', async (req, res) => {
       assigned_to && (assigned_to === 'juli' || assigned_to === 'gino') &&
       assigned_to !== old.assigned_to && assigned_to !== current_user_id
     ) {
-      await notifyOther(current_user_id, 'Task assigned to you', `${userName(current_user_id)} assigned you: "${updated.title}"`);
+      await notifyOther(assigned_to, 'Task assigned to you', `${userName(current_user_id)} assigned you: "${updated.title}"`);
     }
 
     // Auto-create next instance when a recurring task is completed
     if (status === 'done' && old.is_recurring && old.recurring_frequency) {
-      const baseDate = old.custom_date ? new Date(old.custom_date) : new Date();
-      const nextDate = new Date(baseDate);
-      const freq = old.recurring_frequency;
-      if (freq === 'daily')    nextDate.setDate(nextDate.getDate() + 1);
-      else if (freq === 'weekly')   nextDate.setDate(nextDate.getDate() + 7);
-      else if (freq === 'biweekly') nextDate.setDate(nextDate.getDate() + 14);
-      else if (freq === 'monthly')  nextDate.setMonth(nextDate.getMonth() + 1);
+      // Race-condition guard: check if a pending recurring card with the same title already exists
+      const { rows: dupeRows } = await pool.query(
+        `SELECT id FROM cards
+         WHERE title = $1 AND is_recurring = true AND recurring_frequency = $2
+           AND created_by = $3 AND status != 'done'
+         LIMIT 1`,
+        [old.title, old.recurring_frequency, old.created_by]
+      );
 
-      // If the calculated next date is in the past, advance from today instead
-      const now = new Date();
-      if (nextDate < now) {
-        nextDate.setTime(now.getTime());
-        if (freq === 'daily')    nextDate.setDate(nextDate.getDate() + 1);
-        else if (freq === 'weekly')   nextDate.setDate(nextDate.getDate() + 7);
-        else if (freq === 'biweekly') nextDate.setDate(nextDate.getDate() + 14);
-        else if (freq === 'monthly')  nextDate.setMonth(nextDate.getMonth() + 1);
+      if (dupeRows.length === 0) {
+        // Parse date as UTC to avoid timezone off-by-one errors
+        let baseMs;
+        if (old.custom_date) {
+          const parts = String(old.custom_date).split('T')[0].split('-');
+          baseMs = Date.UTC(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        } else {
+          const now = new Date();
+          baseMs = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+        }
+
+        const nextDate = new Date(baseMs);
+        const freq = old.recurring_frequency;
+        if (freq === 'daily')         nextDate.setUTCDate(nextDate.getUTCDate() + 1);
+        else if (freq === 'weekly')   nextDate.setUTCDate(nextDate.getUTCDate() + 7);
+        else if (freq === 'biweekly') nextDate.setUTCDate(nextDate.getUTCDate() + 14);
+        else if (freq === 'monthly')  nextDate.setUTCMonth(nextDate.getUTCMonth() + 1);
+
+        // If the calculated next date is in the past, advance from today instead
+        const nowMs = Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate());
+        if (nextDate.getTime() < nowMs) {
+          const today = new Date(nowMs);
+          if (freq === 'daily')         today.setUTCDate(today.getUTCDate() + 1);
+          else if (freq === 'weekly')   today.setUTCDate(today.getUTCDate() + 7);
+          else if (freq === 'biweekly') today.setUTCDate(today.getUTCDate() + 14);
+          else if (freq === 'monthly')  today.setUTCMonth(today.getUTCMonth() + 1);
+          nextDate.setTime(today.getTime());
+        }
+
+        const pad = (n) => String(n).padStart(2, '0');
+        const nextDateStr = `${nextDate.getUTCFullYear()}-${pad(nextDate.getUTCMonth() + 1)}-${pad(nextDate.getUTCDate())}`;
+        const nextTimeline = old.timeline === 'custom' || old.custom_date ? 'custom' : old.timeline || 'custom';
+        const { rows: [next] } = await pool.query(`
+          INSERT INTO cards (title, timeline, custom_date, assigned_to, tag, priority, is_recurring, recurring_frequency, notes, created_by)
+          VALUES ($1, $2, $3, $4, $5, $6, true, $7, $8, $9)
+          RETURNING *
+        `, [old.title, nextTimeline, nextDateStr, old.assigned_to, old.tag, old.priority, old.recurring_frequency, old.notes, old.created_by]);
+
+        req.app.get('io').emit('card:created', { ...next, reactions: [], comments: [], subtasks: [], subtask_count: 0, subtask_done_count: 0 });
       }
-
-      const nextDateStr = nextDate.toISOString().split('T')[0];
-      const nextTimeline = old.timeline === 'custom' || old.custom_date ? 'custom' : old.timeline || 'custom';
-      const { rows: [next] } = await pool.query(`
-        INSERT INTO cards (title, timeline, custom_date, assigned_to, tag, priority, is_recurring, recurring_frequency, notes, created_by)
-        VALUES ($1, $2, $3, $4, $5, $6, true, $7, $8, $9)
-        RETURNING *
-      `, [old.title, nextTimeline, nextDateStr, old.assigned_to, old.tag, old.priority, old.recurring_frequency, old.notes, old.created_by]);
-
-      req.app.get('io').emit('card:created', { ...next, reactions: [], comments: [], subtasks: [], subtask_count: 0, subtask_done_count: 0 });
     }
 
     res.json(full);

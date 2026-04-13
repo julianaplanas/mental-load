@@ -14,15 +14,20 @@ const statsRouter = require('./routes/stats');
 
 const app = express();
 const server = http.createServer(app);
+
+const allowedOrigin = process.env.NODE_ENV === 'production'
+  ? process.env.FRONTEND_URL
+  : '*';
+
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: allowedOrigin,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   },
 });
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: allowedOrigin }));
 app.use(express.json());
 
 // Make io accessible in routes
