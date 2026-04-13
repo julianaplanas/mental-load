@@ -1,9 +1,15 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCards } from '@/hooks/useCards';
 import { useAuth } from '@/hooks/useAuth';
 import { requestAndRegister, notificationsSupported, notificationPermission } from '@/lib/notifications';
 import CardItem from '@/components/CardItem';
+import type { AssignedTo } from '@/types';
+
+type SortMode = 'due_date' | 'priority';
+type WhoFilter = 'all' | AssignedTo;
+
+const PRIORITY_RANK: Record<string, number> = { urgent: 0, normal: 1, low: 2 };
 
 function dateLabel(): string {
   return new Date().toLocaleDateString('en-US', {
@@ -31,6 +37,8 @@ export default function FeedPage() {
   const { userId } = useAuth();
   const navigate = useNavigate();
   const [notifDismissed, setNotifDismissed] = useState(false);
+  const [sortMode, setSortMode] = useState<SortMode>('due_date');
+  const [whoFilter, setWhoFilter] = useState<WhoFilter>('all');
   const showNotifPrompt = notificationsSupported() && notificationPermission() === 'default' && !notifDismissed;
 
   const handleEnableNotifications = async () => {
@@ -39,6 +47,19 @@ export default function FeedPage() {
   };
 
   const urgentCount = cards.filter((c) => c.priority === 'urgent' && c.status !== 'done').length;
+
+  const visibleCards = useMemo(() => {
+    let result = whoFilter === 'all' ? cards : cards.filter((c) => c.assigned_to === whoFilter);
+    if (sortMode === 'priority') {
+      result = [...result].sort((a, b) => {
+        const pd = PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority];
+        if (pd !== 0) return pd;
+        // preserve backend due-date order within same priority (stable sort)
+        return 0;
+      });
+    }
+    return result;
+  }, [cards, sortMode, whoFilter]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -133,6 +154,46 @@ export default function FeedPage() {
         )}
       </div>
 
+      {/* Sort + Filter bar */}
+      <div style={{ borderBottom: '2px solid var(--ink)', background: 'var(--surface)', flexShrink: 0 }}>
+        {/* Sort row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px 4px', overflowX: 'auto' }}>
+          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 1, flexShrink: 0 }}>Sort</span>
+          {([['due_date', '📅 Due date'], ['priority', '🔴 Priority']] as [SortMode, string][]).map(([mode, label]) => (
+            <button
+              key={mode}
+              onClick={() => setSortMode(mode)}
+              style={{
+                padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                border: `2px solid ${sortMode === mode ? 'var(--ink)' : 'var(--border-soft)'}`,
+                background: sortMode === mode ? 'var(--primary)' : 'transparent',
+                color: sortMode === mode ? 'var(--ink)' : 'var(--muted)',
+                boxShadow: sortMode === mode ? '2px 2px 0 var(--ink)' : 'none',
+                flexShrink: 0, whiteSpace: 'nowrap', transition: 'all 0.1s ease',
+              }}
+            >{label}</button>
+          ))}
+        </div>
+        {/* Filter row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 14px 8px', overflowX: 'auto' }}>
+          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 1, flexShrink: 0 }}>Who</span>
+          {([['all', 'Everyone'], ['either', 'Either'], ['juli', 'Juli'], ['gino', 'Gino'], ['together', 'Together']] as [WhoFilter, string][]).map(([val, label]) => (
+            <button
+              key={val}
+              onClick={() => setWhoFilter(val)}
+              style={{
+                padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                border: `2px solid ${whoFilter === val ? 'var(--ink)' : 'var(--border-soft)'}`,
+                background: whoFilter === val ? 'var(--primary)' : 'transparent',
+                color: whoFilter === val ? 'var(--ink)' : 'var(--muted)',
+                boxShadow: whoFilter === val ? '2px 2px 0 var(--ink)' : 'none',
+                flexShrink: 0, whiteSpace: 'nowrap', transition: 'all 0.1s ease',
+              }}
+            >{label}</button>
+          ))}
+        </div>
+      </div>
+
       {/* Notification prompt */}
       {showNotifPrompt && (
         <div style={{
@@ -192,26 +253,21 @@ export default function FeedPage() {
             <p style={{ fontSize: 15, color: 'var(--muted)', margin: 0, fontWeight: 600 }}>{error}</p>
             <button onClick={refresh} className="btn-primary">Try again</button>
           </div>
-        ) : cards.length === 0 ? (
+        ) : visibleCards.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: 52, animation: 'float 3s ease-in-out infinite' }}>🎉</span>
-            <p style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 26,
-              fontWeight: 700,
-              color: 'var(--text)',
-              margin: 0,
-              letterSpacing: -0.5,
-            }}>
-              All caught up!
+            <span style={{ fontSize: 52, animation: 'float 3s ease-in-out infinite' }}>
+              {whoFilter !== 'all' ? '🔍' : '🎉'}
+            </span>
+            <p style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: 'var(--text)', margin: 0, letterSpacing: -0.5 }}>
+              {whoFilter !== 'all' ? 'No tasks found' : 'All caught up!'}
             </p>
             <p style={{ fontSize: 14, color: 'var(--muted)', margin: 0, fontWeight: 600 }}>
-              No pending tasks. Add one with the + button.
+              {whoFilter !== 'all' ? 'No tasks match this filter.' : 'No pending tasks. Add one with the + button.'}
             </p>
           </div>
         ) : (
           <div style={{ paddingBottom: 12, paddingTop: 6 }}>
-            {cards.map((card) => (
+            {visibleCards.map((card) => (
               <CardItem key={card.id} card={card} />
             ))}
           </div>
