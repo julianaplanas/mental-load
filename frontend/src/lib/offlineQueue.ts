@@ -2,7 +2,7 @@ const KEY = 'noi:offline_queue';
 
 export type QueuedAction = {
   id: string;
-  action: 'createCard' | 'updateCard' | 'addGroceryItem' | 'updateGroceryItem';
+  action: 'createCard' | 'updateCard' | 'addGroceryItem' | 'updateGroceryItem' | 'addSubtask' | 'updateSubtask' | 'deleteSubtask' | 'addComment' | 'setReaction' | 'removeReaction';
   data: unknown;
 };
 

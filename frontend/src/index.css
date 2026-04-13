@@ -143,16 +143,17 @@ a { text-decoration: none; color: inherit; }
 
 .tab-bar {
   display: flex;
+  align-items: flex-start;
   background: var(--surface);
   border-top: 2px solid var(--ink);
-  height: var(--tab-h);
+  height: calc(var(--tab-h) + env(safe-area-inset-bottom));
   padding: 0;
-  padding-bottom: env(safe-area-inset-bottom);
   flex-shrink: 0;
 }
 
 .tab-item {
   flex: 1;
+  height: var(--tab-h);
   display: flex;
   flex-direction: column;
   align-items: center;

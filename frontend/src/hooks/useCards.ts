@@ -31,11 +31,13 @@ export function useCards() {
     socket.on(EVENTS.CARD_CREATED, onAny);
     socket.on(EVENTS.CARD_UPDATED, onAny);
     socket.on(EVENTS.CARD_DELETED, onAny);
+    socket.on('connect', onAny);
 
     return () => {
       socket.off(EVENTS.CARD_CREATED, onAny);
       socket.off(EVENTS.CARD_UPDATED, onAny);
       socket.off(EVENTS.CARD_DELETED, onAny);
+      socket.off('connect', onAny);
     };
   }, [refresh]);
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { getSocket } from '@/lib/socket';
@@ -37,8 +37,21 @@ export default function App() {
   const { userId, signIn } = useAuth();
   const location = useLocation();
   const [isOnline, setIsOnline] = useState(true);
+  const [showOfflineBanner, setShowOfflineBanner] = useState(false);
+  const offlineTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isTabRoute = TAB_ROUTES.some((p) => location.pathname.startsWith(p));
+
+  // Only show the banner after 2.5s of being offline, to avoid flash on startup
+  useEffect(() => {
+    if (isOnline) {
+      if (offlineTimer.current) clearTimeout(offlineTimer.current);
+      setShowOfflineBanner(false);
+    } else {
+      offlineTimer.current = setTimeout(() => setShowOfflineBanner(true), 2500);
+    }
+    return () => { if (offlineTimer.current) clearTimeout(offlineTimer.current); };
+  }, [isOnline]);
 
   useEffect(() => {
     if (!userId) return;
@@ -71,7 +84,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      {!isOnline && (
+      {showOfflineBanner && (
         <div className="offline-banner">
           You're offline — changes will sync when you reconnect
         </div>
