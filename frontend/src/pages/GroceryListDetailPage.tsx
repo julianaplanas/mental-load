@@ -1,0 +1,353 @@
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getGroceryItems, addGroceryItem, updateGroceryItem, deleteGroceryItem, clearCheckedGrocery, getGroceryLists } from '@/lib/api';
+import { getSocket, EVENTS } from '@/lib/socket';
+import { useAuth } from '@/hooks/useAuth';
+import type { GroceryItem, GroceryCategory, GroceryList } from '@/types';
+
+const CATEGORIES: { key: GroceryCategory; label: string; emoji: string }[] = [
+  { key: 'produce', label: 'Produce', emoji: '🥦' },
+  { key: 'dairy', label: 'Dairy', emoji: '🥛' },
+  { key: 'meat', label: 'Meat', emoji: '🥩' },
+  { key: 'pantry', label: 'Pantry', emoji: '🍝' },
+  { key: 'frozen', label: 'Frozen', emoji: '🧊' },
+  { key: 'drinks', label: 'Drinks', emoji: '🧃' },
+  { key: 'other', label: 'Other', emoji: '📦' },
+];
+const CAT_ORDER = CATEGORIES.map((c) => c.key);
+
+function getCatInfo(key: string | null | undefined) {
+  return CATEGORIES.find((c) => c.key === key) ?? { label: 'Other items', emoji: '🛍️' };
+}
+
+function buildGroups(items: GroceryItem[]) {
+  const unchecked = items.filter((i) => !i.is_checked);
+  const checked = items.filter((i) => i.is_checked);
+  const byCategory: Record<string, GroceryItem[]> = {};
+  for (const item of unchecked) {
+    const k = item.category ?? '__none__';
+    if (!byCategory[k]) byCategory[k] = [];
+    byCategory[k].push(item);
+  }
+  const groups: { key: string; label: string; emoji: string; items: GroceryItem[] }[] = [];
+  for (const cat of CAT_ORDER) {
+    if (byCategory[cat]) {
+      const info = getCatInfo(cat);
+      groups.push({ key: cat, label: info.label, emoji: info.emoji, items: byCategory[cat] });
+    }
+  }
+  if (byCategory['__none__']) {
+    groups.push({ key: '__none__', label: 'Other items', emoji: '🛍️', items: byCategory['__none__'] });
+  }
+  return { groups, checked };
+}
+
+export default function GroceryListDetailPage() {
+  const { listId } = useParams<{ listId: string }>();
+  const navigate = useNavigate();
+  const { userId } = useAuth();
+  const [listInfo, setListInfo] = useState<GroceryList | null>(null);
+  const [items, setItems] = useState<GroceryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [newName, setNewName] = useState('');
+  const [newQty, setNewQty] = useState('');
+  const [newCat, setNewCat] = useState<GroceryCategory | null>(null);
+  const [showExpanded, setShowExpanded] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [undoItem, setUndoItem] = useState<GroceryItem | null>(null);
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const fetchItems = useCallback(async (silent = false) => {
+    if (!listId) return;
+    if (!silent) setLoading(true);
+    try {
+      const { data } = await getGroceryItems(listId);
+      setItems(data);
+    } finally {
+      setLoading(false);
+    }
+  }, [listId]);
+
+  const fetchListInfo = useCallback(async () => {
+    try {
+      const { data } = await getGroceryLists();
+      const found = (data as GroceryList[]).find((l) => l.id === listId);
+      if (found) setListInfo(found);
+    } catch { /* ignore */ }
+  }, [listId]);
+
+  useEffect(() => {
+    fetchItems();
+    fetchListInfo();
+    const socket = getSocket();
+    const onGroceryUpdated = (event: { list_id?: string }) => {
+      if (event.list_id === listId) fetchItems(true);
+    };
+    const onListsUpdated = (lists: GroceryList[]) => {
+      const found = lists.find((l) => l.id === listId);
+      if (found) setListInfo(found);
+    };
+    socket.on(EVENTS.GROCERY_UPDATED, onGroceryUpdated);
+    socket.on(EVENTS.GROCERY_LISTS_UPDATED, onListsUpdated);
+    return () => {
+      socket.off(EVENTS.GROCERY_UPDATED, onGroceryUpdated);
+      socket.off(EVENTS.GROCERY_LISTS_UPDATED, onListsUpdated);
+    };
+  }, [fetchItems, fetchListInfo, listId]);
+
+  const handleToggle = async (item: GroceryItem) => {
+    const updated = { ...item, is_checked: !item.is_checked };
+    setItems((prev) => prev.map((i) => (i.id === item.id ? updated : i)));
+    try {
+      await updateGroceryItem(item.id, { is_checked: !item.is_checked });
+    } catch {
+      setItems((prev) => prev.map((i) => (i.id === item.id ? item : i)));
+    }
+  };
+
+  const handleDelete = async (item: GroceryItem) => {
+    setItems((prev) => prev.filter((i) => i.id !== item.id));
+    try { await deleteGroceryItem(item.id); } catch { /* already removed from UI */ }
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    setUndoItem(item);
+    undoTimer.current = setTimeout(() => setUndoItem(null), 3500);
+  };
+
+  const handleUndo = async () => {
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    if (!undoItem || !listId) return;
+    try {
+      const { data } = await addGroceryItem(listId, {
+        name: undoItem.name, quantity: undoItem.quantity,
+        category: undoItem.category, added_by: undoItem.added_by,
+      });
+      setItems((prev) => [data, ...prev]);
+    } catch { /* silently fail */ }
+    setUndoItem(null);
+  };
+
+  const handleAdd = async () => {
+    if (!newName.trim() || adding || !listId) return;
+    setAdding(true);
+    try {
+      const { data } = await addGroceryItem(listId, {
+        name: newName.trim(), quantity: newQty.trim() || null,
+        category: newCat, added_by: userId,
+      });
+      setItems((prev) => [...prev, data]);
+      setNewName(''); setNewQty(''); setNewCat(null); setShowExpanded(false);
+    } catch {
+      alert('Could not add item.');
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const handleClearChecked = async () => {
+    if (!listId) return;
+    const count = items.filter((i) => i.is_checked).length;
+    if (count === 0) return;
+    if (!confirm(`Remove all ${count} checked item${count !== 1 ? 's' : ''}?`)) return;
+    setItems((prev) => prev.filter((i) => !i.is_checked));
+    await clearCheckedGrocery(listId);
+  };
+
+  const { groups, checked } = buildGroups(items);
+  const hasChecked = checked.length > 0;
+  const listEmoji = listInfo?.emoji ?? '🛒';
+  const listName = listInfo?.name ?? 'List';
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Header */}
+      <div style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '16px 20px 12px', borderBottom: '2px solid var(--ink)', flexShrink: 0,
+        background: 'var(--bg)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button
+            onClick={() => navigate('/grocery')}
+            style={{ fontSize: 15, color: 'var(--ink)', fontWeight: 700, cursor: 'pointer', padding: 0, letterSpacing: 0.3, background: 'none', border: 'none', fontFamily: 'inherit' }}
+          >
+            ← Back
+          </button>
+          <h1 style={{ fontSize: 22, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)', margin: 0, letterSpacing: -0.5, textTransform: 'uppercase' }}>
+            {listEmoji} {listName}
+          </h1>
+        </div>
+        {hasChecked && (
+          <button
+            onClick={handleClearChecked}
+            style={{ background: 'var(--primary)', border: '2px solid var(--ink)', borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 700, color: 'var(--ink)', cursor: 'pointer', boxShadow: '2px 2px 0 var(--ink)', textTransform: 'uppercase', letterSpacing: 0.5 }}
+          >
+            Clear ✓
+          </button>
+        )}
+      </div>
+
+      {/* List */}
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {loading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
+            <div className="spinner" />
+          </div>
+        ) : groups.length === 0 && !hasChecked ? (
+          <div style={{ textAlign: 'center', paddingTop: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 48, animation: 'float 3s ease-in-out infinite' }}>{listEmoji}</span>
+            <p style={{ fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)', margin: 0, letterSpacing: -0.3, textTransform: 'uppercase' }}>List is empty</p>
+            <p style={{ fontSize: 14, color: 'var(--muted)', margin: 0, fontWeight: 600 }}>Add your first item below.</p>
+          </div>
+        ) : (
+          <div style={{ paddingTop: 8, paddingBottom: 8 }}>
+            {groups.map((group) => (
+              <div key={group.key} style={{ marginBottom: 4 }}>
+                <p style={{ fontSize: 10, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--muted)', padding: '10px 20px', textTransform: 'uppercase', letterSpacing: 1.2, margin: 0 }}>
+                  {group.emoji} {group.label}
+                </p>
+                {group.items.map((item) => (
+                  <ItemRow key={item.id} item={item} onToggle={handleToggle} onDelete={handleDelete} />
+                ))}
+              </div>
+            ))}
+            {hasChecked && (
+              <div style={{ marginBottom: 4 }}>
+                <p style={{ fontSize: 10, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--light-muted)', padding: '10px 20px', textTransform: 'uppercase', letterSpacing: 1.2, margin: 0 }}>
+                  ✓ In the basket
+                </p>
+                {checked.map((item) => (
+                  <ItemRow key={item.id} item={item} onToggle={handleToggle} onDelete={handleDelete} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Add bar */}
+      <div style={{ background: 'var(--surface)', borderTop: '2px solid var(--ink)', flexShrink: 0 }}>
+        {/* Category chips */}
+        <div style={{ padding: '10px 12px 6px', display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 8 }}>
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat.key}
+              onClick={() => setNewCat(newCat === cat.key ? null : cat.key)}
+              style={{
+                padding: '5px 12px', borderRadius: 6, whiteSpace: 'nowrap', cursor: 'pointer',
+                border: `2px solid ${newCat === cat.key ? 'var(--ink)' : 'var(--border-soft)'}`,
+                background: newCat === cat.key ? 'var(--primary)' : 'transparent',
+                fontSize: 11, fontWeight: 700,
+                color: newCat === cat.key ? 'var(--ink)' : 'var(--muted)',
+                boxShadow: newCat === cat.key ? '2px 2px 0 var(--ink)' : 'none',
+                transition: 'all 0.1s ease',
+                flexShrink: 0,
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+              }}
+            >
+              {cat.emoji} {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Quantity field */}
+        {showExpanded && (
+          <div style={{ padding: '0 12px 8px' }}>
+            <input
+              type="text"
+              value={newQty}
+              onChange={(e) => setNewQty(e.target.value)}
+              placeholder="Quantity (e.g. x2)"
+              style={{ border: '2px solid var(--ink)', borderRadius: 8, padding: '8px 14px', fontSize: 15, fontWeight: 500, color: 'var(--text)', background: 'var(--bg)', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit' }}
+            />
+          </div>
+        )}
+
+        {/* Input row */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '6px 12px 10px', gap: 8, paddingBottom: 'calc(10px + env(safe-area-inset-bottom))' }}>
+          <input
+            type="text"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            placeholder="Add an item..."
+            onKeyDown={(e) => { if (e.key === 'Enter') handleAdd(); }}
+            style={{ flex: 1, border: '2px solid var(--ink)', borderRadius: 8, padding: '10px 16px', fontSize: 15, fontWeight: 500, color: 'var(--text)', background: 'var(--bg)', height: 44, boxSizing: 'border-box', fontFamily: 'inherit' }}
+          />
+          <button
+            onClick={() => setShowExpanded((v) => !v)}
+            style={{ width: 36, height: 36, borderRadius: 6, background: 'var(--surface)', border: '2px solid var(--ink)', fontSize: 12, color: 'var(--ink)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}
+          >
+            {showExpanded ? '▼' : '▲'}
+          </button>
+          <button
+            onClick={handleAdd}
+            disabled={!newName.trim() || adding}
+            style={{ background: 'var(--primary)', color: 'var(--ink)', border: '2px solid var(--ink)', borderRadius: 8, padding: '0 18px', height: 44, fontSize: 14, fontWeight: 700, cursor: 'pointer', opacity: (!newName.trim() || adding) ? 0.4 : 1, fontFamily: 'var(--font-body)', boxShadow: '2px 2px 0 var(--ink)', textTransform: 'uppercase', letterSpacing: 0.5 }}
+          >
+            Add
+          </button>
+        </div>
+      </div>
+
+      {/* Undo toast */}
+      {undoItem && (
+        <div className="toast">
+          <span>"{undoItem.name}" removed</span>
+          <button className="toast-action" onClick={handleUndo}>Undo</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ItemRow({ item, onToggle, onDelete }: { item: GroceryItem; onToggle: (i: GroceryItem) => void; onDelete: (i: GroceryItem) => void }) {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', padding: '12px 16px',
+      margin: '0 14px 6px',
+      background: item.is_checked ? 'var(--surface-warm)' : 'var(--surface)',
+      borderRadius: 10,
+      border: '2px solid var(--ink)',
+      boxShadow: item.is_checked ? '1px 1px 0px var(--ink)' : 'var(--shadow-card)',
+      transition: 'all 0.15s ease',
+      opacity: item.is_checked ? 0.6 : 1,
+    }}>
+      <button
+        onClick={() => onToggle(item)}
+        style={{
+          width: 26, height: 26, borderRadius: 6, flexShrink: 0,
+          border: `2px solid ${item.is_checked ? 'var(--green)' : 'var(--ink)'}`,
+          background: item.is_checked ? 'var(--green)' : 'transparent',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer', marginRight: 12,
+          transition: 'all 0.15s ease',
+        }}
+      >
+        {item.is_checked && (
+          <span style={{ color: '#fff', fontSize: 13, fontWeight: 700, animation: 'checkBounce 0.3s var(--ease-spring)' }}>✓</span>
+        )}
+      </button>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{
+          fontSize: 15, fontWeight: 700,
+          color: item.is_checked ? 'var(--muted)' : 'var(--text)',
+          margin: 0,
+          textDecoration: item.is_checked ? 'line-through' : 'none',
+        }}>
+          {item.name}
+        </p>
+        {item.quantity && (
+          <p style={{ fontSize: 12, color: 'var(--muted)', margin: '2px 0 0', fontWeight: 600 }}>
+            {item.quantity}
+          </p>
+        )}
+      </div>
+      <button
+        onClick={() => onDelete(item)}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, color: 'var(--muted)', padding: 0, lineHeight: 1, marginLeft: 10, flexShrink: 0, fontWeight: 700 }}
+      >
+        ×
+      </button>
+    </div>
+  );
+}

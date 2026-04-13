@@ -38,12 +38,22 @@ export const setReaction = (cardId: string, data: { user_id: string; emoji: stri
 export const removeReaction = (cardId: string, userId: string) =>
   api.delete(`/cards/${cardId}/reactions/${userId}`);
 
-// Grocery
-export const getGroceryItems = () => api.get('/grocery');
-export const addGroceryItem = (data: object) => api.post('/grocery', data);
-export const updateGroceryItem = (id: string, data: object) => api.patch(`/grocery/${id}`, data);
-export const deleteGroceryItem = (id: string) => api.delete(`/grocery/${id}`);
-export const clearCheckedGrocery = () => api.delete('/grocery/checked');
+// Grocery Lists
+export const getGroceryLists = () => api.get('/grocery/lists');
+export const createGroceryList = (data: { name: string; emoji: string; created_by: string }) =>
+  api.post('/grocery/lists', data);
+export const deleteGroceryList = (listId: string) => api.delete(`/grocery/lists/${listId}`);
+
+// Grocery Items (list-scoped)
+export const getGroceryItems = (listId: string) => api.get(`/grocery/lists/${listId}/items`);
+export const addGroceryItem = (listId: string, data: object) =>
+  api.post(`/grocery/lists/${listId}/items`, data);
+export const clearCheckedGrocery = (listId: string) =>
+  api.delete(`/grocery/lists/${listId}/items/checked`);
+
+// Grocery Items (item-level)
+export const updateGroceryItem = (id: string, data: object) => api.patch(`/grocery/items/${id}`, data);
+export const deleteGroceryItem = (id: string) => api.delete(`/grocery/items/${id}`);
 
 // Stats
 export const getStatsByCategory = (period: 'month' | 'all') =>

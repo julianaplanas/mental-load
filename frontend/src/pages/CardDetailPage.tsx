@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useCallback } from 'react';
-import { getCard, updateCard, deleteCard, addGroceryItem } from '@/lib/api';
+import { getCard, updateCard, deleteCard, addGroceryItem, getGroceryLists } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import TimelineBadge from '@/components/TimelineBadge';
 import { CommentsSection } from '@/components/CommentsSection';
@@ -8,7 +8,7 @@ import { ReactionsSection } from '@/components/ReactionsSection';
 import { SubtasksSection } from '@/components/SubtasksSection';
 import { getSocket, EVENTS } from '@/lib/socket';
 import { PRESET_TAGS } from '@/types';
-import type { Card } from '@/types';
+import type { Card, GroceryList } from '@/types';
 
 const PRIORITY_LABEL: Record<string, string> = { urgent: '🔴 Urgent', normal: '⚪ Normal', low: '🟢 Low' };
 const ASSIGNED_LABEL: Record<string, string> = { either: 'Either of us', juli: 'Juli', gino: 'Gino', together: 'Together' };
@@ -42,6 +42,9 @@ export default function CardDetailPage() {
   const [showGroceryAdd, setShowGroceryAdd] = useState(false);
   const [groceryAdding, setGroceryAdding] = useState(false);
   const [groceryConfirm, setGroceryConfirm] = useState(false);
+  const [availableLists, setAvailableLists] = useState<GroceryList[]>([]);
+  const [selectedListId, setSelectedListId] = useState<string | null>(null);
+  const [listsLoading, setListsLoading] = useState(false);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -278,41 +281,93 @@ export default function CardDetailPage() {
           <div style={{ padding: '0 20px 24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
               <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 1, margin: 0 }}>Add to grocery list</p>
-              <button onClick={() => setShowGroceryAdd((v) => !v)} style={{ fontSize: 13, color: 'var(--ink)', fontWeight: 700, cursor: 'pointer', padding: '4px 10px', background: 'var(--primary)', border: '1.5px solid var(--ink)', borderRadius: 6, boxShadow: '2px 2px 0 var(--ink)' }}>
-                {showGroceryAdd ? 'Cancel' : '+ Add item'}
+              <button onClick={async () => {
+                if (showGroceryAdd) {
+                  setShowGroceryAdd(false);
+                  setSelectedListId(null);
+                  return;
+                }
+                setListsLoading(true);
+                try {
+                  const { data } = await getGroceryLists();
+                  setAvailableLists(data);
+                  if (data.length === 1) {
+                    setSelectedListId(data[0].id);
+                  } else {
+                    setSelectedListId(null);
+                  }
+                  setShowGroceryAdd(true);
+                } catch {
+                  alert('Could not load grocery lists.');
+                } finally {
+                  setListsLoading(false);
+                }
+              }} style={{ fontSize: 13, color: 'var(--ink)', fontWeight: 700, cursor: 'pointer', padding: '4px 10px', background: 'var(--primary)', border: '1.5px solid var(--ink)', borderRadius: 6, boxShadow: '2px 2px 0 var(--ink)' }}>
+                {listsLoading ? '...' : showGroceryAdd ? 'Cancel' : '+ Add item'}
               </button>
             </div>
-            {showGroceryAdd && (
-              <div style={{ display: 'flex', gap: 8 }}>
-                <input
-                  type="text"
-                  value={groceryItem}
-                  onChange={(e) => setGroceryItem(e.target.value)}
-                  placeholder="Item name..."
-                  autoFocus
-                  style={{ flex: 1, border: '2px solid var(--ink)', borderRadius: 8, padding: '10px 12px', fontSize: 16, color: 'var(--text)', background: 'var(--surface)', height: 44, boxSizing: 'border-box', fontFamily: 'inherit', fontWeight: 500 }}
-                />
-                <button
-                  disabled={!groceryItem.trim() || groceryAdding}
-                  onClick={async () => {
-                    if (!groceryItem.trim()) return;
-                    setGroceryAdding(true);
-                    try {
-                      await addGroceryItem({ name: groceryItem.trim(), added_by: userId });
-                      setGroceryItem('');
-                      setGroceryConfirm(true);
-                      setTimeout(() => setGroceryConfirm(false), 2000);
-                    } catch {
-                      alert('Could not add to grocery list.');
-                    } finally {
-                      setGroceryAdding(false);
-                    }
-                  }}
-                  style={{ background: 'var(--primary)', border: '2px solid var(--ink)', borderRadius: 8, padding: '0 16px', height: 44, color: 'var(--ink)', fontWeight: 700, fontSize: 14, cursor: 'pointer', opacity: (!groceryItem.trim() || groceryAdding) ? 0.4 : 1, fontFamily: 'var(--font-display)', boxShadow: '2px 2px 0 var(--ink)' }}
-                >
-                  Add
-                </button>
+            {showGroceryAdd && availableLists.length === 0 && (
+              <p style={{ fontSize: 13, color: 'var(--muted)', fontWeight: 600, margin: 0 }}>
+                No grocery lists yet — create one in the Groceries tab
+              </p>
+            )}
+            {showGroceryAdd && availableLists.length >= 2 && !selectedListId && (
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+                {availableLists.map((list) => (
+                  <button
+                    key={list.id}
+                    onClick={() => setSelectedListId(list.id)}
+                    style={{
+                      padding: '6px 12px', borderRadius: 8, cursor: 'pointer',
+                      border: '2px solid var(--ink)', background: 'var(--surface)',
+                      fontSize: 13, fontWeight: 700, color: 'var(--ink)',
+                      boxShadow: '2px 2px 0 var(--ink)', fontFamily: 'inherit',
+                    }}
+                  >
+                    {list.emoji} {list.name}
+                  </button>
+                ))}
               </div>
+            )}
+            {showGroceryAdd && selectedListId && (
+              <>
+                {availableLists.length >= 2 && (
+                  <p style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 700, margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    Adding to: {availableLists.find((l) => l.id === selectedListId)?.emoji} {availableLists.find((l) => l.id === selectedListId)?.name}
+                    <button onClick={() => setSelectedListId(null)} style={{ marginLeft: 8, fontSize: 11, color: 'var(--ink)', fontWeight: 700, cursor: 'pointer', background: 'none', border: 'none', textDecoration: 'underline', fontFamily: 'inherit' }}>Change</button>
+                  </p>
+                )}
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input
+                    type="text"
+                    value={groceryItem}
+                    onChange={(e) => setGroceryItem(e.target.value)}
+                    placeholder="Item name..."
+                    autoFocus
+                    style={{ flex: 1, border: '2px solid var(--ink)', borderRadius: 8, padding: '10px 12px', fontSize: 16, color: 'var(--text)', background: 'var(--surface)', height: 44, boxSizing: 'border-box', fontFamily: 'inherit', fontWeight: 500 }}
+                  />
+                  <button
+                    disabled={!groceryItem.trim() || groceryAdding}
+                    onClick={async () => {
+                      if (!groceryItem.trim() || !selectedListId) return;
+                      setGroceryAdding(true);
+                      try {
+                        await addGroceryItem(selectedListId, { name: groceryItem.trim(), added_by: userId });
+                        setGroceryItem('');
+                        setGroceryConfirm(true);
+                        setTimeout(() => setGroceryConfirm(false), 2000);
+                      } catch {
+                        alert('Could not add to grocery list.');
+                      } finally {
+                        setGroceryAdding(false);
+                      }
+                    }}
+                    style={{ background: 'var(--primary)', border: '2px solid var(--ink)', borderRadius: 8, padding: '0 16px', height: 44, color: 'var(--ink)', fontWeight: 700, fontSize: 14, cursor: 'pointer', opacity: (!groceryItem.trim() || groceryAdding) ? 0.4 : 1, fontFamily: 'var(--font-display)', boxShadow: '2px 2px 0 var(--ink)' }}
+                  >
+                    Add
+                  </button>
+                </div>
+              </>
             )}
             {groceryConfirm && <p style={{ marginTop: 8, fontSize: 13, color: 'var(--green)', fontWeight: 700, margin: '8px 0 0' }}>✓ Added to grocery list!</p>}
           </div>

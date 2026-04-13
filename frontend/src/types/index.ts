@@ -66,6 +66,16 @@ export interface Reaction {
   created_at: string;
 }
 
+export interface GroceryList {
+  id: string;
+  name: string;
+  emoji: string;
+  created_by: UserId;
+  created_at: string;
+  item_count: number;
+  unchecked_count: number;
+}
+
 export interface GroceryItem {
   id: string;
   name: string;
