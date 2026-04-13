@@ -8,7 +8,8 @@ import { createCard, updateCard, addGroceryItem, updateGroceryItem } from '@/lib
 import TabBar from '@/components/TabBar';
 import AuthPage from '@/pages/AuthPage';
 import FeedPage from '@/pages/FeedPage';
-import GroceryPage from '@/pages/GroceryPage';
+import GroceryListsPage from '@/pages/GroceryListsPage';
+import GroceryListDetailPage from '@/pages/GroceryListDetailPage';
 import DashboardPage from '@/pages/DashboardPage';
 import CardDetailPage from '@/pages/CardDetailPage';
 import CardFormPage from '@/pages/CardFormPage';
@@ -21,7 +22,10 @@ async function processOfflineQueue() {
       else if (item.action === 'updateCard') {
         const d = item.data as { id: string; patch: object };
         await updateCard(d.id, d.patch);
-      } else if (item.action === 'addGroceryItem') await addGroceryItem(item.data as object);
+      } else if (item.action === 'addGroceryItem') {
+        const d = item.data as { listId: string; item: object };
+        await addGroceryItem(d.listId, d.item);
+      }
       else if (item.action === 'updateGroceryItem') {
         const d = item.data as { id: string; patch: object };
         await updateGroceryItem(d.id, d.patch);
@@ -82,7 +86,8 @@ export default function App() {
           <div className="page-scroll">
             <Routes>
               <Route path="/tasks" element={<FeedPage />} />
-              <Route path="/grocery" element={<GroceryPage />} />
+              <Route path="/grocery" element={<GroceryListsPage />} />
+              <Route path="/grocery/:listId" element={<GroceryListDetailPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/" element={<Navigate to="/tasks" replace />} />
             </Routes>

@@ -18,4 +18,5 @@ export const EVENTS = {
   COMMENT_ADDED: 'comment:added',
   REACTION_UPDATED: 'reaction:updated',
   GROCERY_UPDATED: 'grocery:updated',
+  GROCERY_LISTS_UPDATED: 'grocery:lists_updated',
 } as const;
