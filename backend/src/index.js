@@ -15,7 +15,7 @@ const statsRouter = require('./routes/stats');
 const app = express();
 const server = http.createServer(app);
 
-const allowedOrigin = process.env.NODE_ENV === 'production'
+const allowedOrigin = (process.env.NODE_ENV === 'production' && process.env.FRONTEND_URL)
   ? process.env.FRONTEND_URL
   : '*';
 
